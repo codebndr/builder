@@ -1,0 +1,3 @@
+codebender_api_homepage:
+    path:     /
+    defaults: { _controller: CodebenderApiBundle:Default:index }

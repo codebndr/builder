@@ -1,0 +1,7 @@
+parameters:
+#    codebender_api.example.class: Codebender\ApiBundle\Example
+
+services:
+#    codebender_api.example:
+#        class: %codebender_api.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
