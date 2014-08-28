@@ -5,3 +5,6 @@ services:
 #    codebender_api.example:
 #        class: %codebender_api.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+
+    codebender_api.handler:
+        class:        Codebender\ApiBundle\Handler\DefaultHandler

@@ -1,3 +1,5 @@
-codebender_api_homepage:
-    path:     /
-    defaults: { _controller: CodebenderApiBundle:Default:index }
+CodebenderApiBundle_compile:
+    pattern:    /compile
+    defaults: { _controller: CodebenderApiBundle:Default:compilelibraries }
+    requirements:
+       _method:  POST
