@@ -13,3 +13,5 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+    compiler: 'http://compilerurl.com/'
+    library: 'http://libraryappurl.com/'
