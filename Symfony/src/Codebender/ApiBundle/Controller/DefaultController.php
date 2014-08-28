@@ -20,24 +20,55 @@ class DefaultController extends Controller
     public function compilelibrariesAction()
     {
         $request = $this->getRequest()->getContent();
-        $requestArr = json_decode($request, true);
-
-        $headers = $requestArr['nonPersonalLib'];
-        $matchedPersonalLib = $requestArr['matchedPersonallibrary'];
-        $contents = $requestArr['contents'];
+        $contents = json_decode($request, true);
 
         $apihandler = $this->get('codebender_api.handler');
+
+        $personalMatchedLib = $contents['libraries'];
+        $files = $contents["files"];
 
         // get library manager url.
         $libmanager_url = $this->container->getParameter('library');
 
-        $foundFiles = $notFoundHeaders = array();
-        $libraries = $matchedPersonalLib;
-        if (!empty($headers)) {
-            foreach ($headers as $header) {
+        $headersArr = $this->checkHeaders($files, $personalMatchedLib);
 
-                $data = $apihandler->get($libmanager_url . "/fetch?library=" . urlencode($header));
+        $contents["libraries"] = $headersArr['libraries'];
+        $request_content = json_encode($contents);
+
+        // compile into compiler with passing request_contents data.
+        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+
+        $responsedata = array('library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
+
+        return new Response(json_encode($responsedata), 200);
+    }
+
+    /**
+     *
+     * @param type $files
+     * @param array $personalLibs
+     *
+     * @return type
+     */
+    protected function checkHeaders($files,  array $personalLibs)
+    {
+        $apiHandler = $this->get('codebender_api.handler');
+
+        $headers = $apiHandler->read_libraries($files);
+
+        // declare arrays
+        $libraries = $notFoundHeaders = $foundFiles = array();
+
+        // get library manager url
+        $libmanager_url = $this->container->getParameter('library');
+
+        $libraries = $personalLibs;
+        foreach ($headers as $header) {
+            if (!in_array($header, $personalLibs)) {
+
+                $data = $apiHandler->get($libmanager_url . "/fetch?library=" . urlencode($header));
                 $data = json_decode($data, true);
+
                 if ($data["success"]) {
                     $libraries[$header] = $data["files"];
                     foreach ($data['files'] as $file) {
@@ -48,19 +79,7 @@ class DefaultController extends Controller
                 }
             }
         }
-
-        $lib_resp_time = microtime(true);
-        $contents["libraries"] = $libraries;
-        $request_content = json_encode($contents);
-        $comp_req_time = microtime(true);
-
-        // compile into compiler with passing request_contents data.
-        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
-
-        $responsedata = array('library' => $libraries, 'foundFiles' => $foundFiles, 'notFoundHeaders' => $notFoundHeaders, 'compileResponse' => $data);
-
-        return new Response(json_encode($responsedata), 200);
+        return array('libraries' => $libraries, 'foundFiles' => $foundFiles, 'notFoundHeaders' => $notFoundHeaders);
     }
-
 }
 
