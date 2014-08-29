@@ -15,6 +15,7 @@ env:
 before_script:
 #  - mysql -u root -e "UPDATE user SET Password=PASSWORD('hello') WHERE User='root';FLUSH PRIVILEGES;" mysql
 #  - sudo service mysql restart
+  - sudo chmod +x Scripts/install.sh
   - Scripts/install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs

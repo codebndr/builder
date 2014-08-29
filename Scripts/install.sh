@@ -38,7 +38,7 @@ fi
 HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 
 sudo mkdir -p /opt/codebender
-sudo cp -r `pwd` /opt/codebender/$PACKAGENAME
+sudo cp -r . /opt/codebender/$PACKAGENAME
 sudo chown -R `whoami`:$HTTPDUSER /opt/codebender/$PACKAGENAME
 cd /opt/codebender/$PACKAGENAME
 
