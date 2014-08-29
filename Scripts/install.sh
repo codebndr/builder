@@ -11,6 +11,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		sudo locale-gen en_US.UTF-8
 		# Make sure we have up-to-date stuff
 		sudo apt-get update
+		sudo apt-get install -y php5-intl
 	fi
 	# Install dependencies
 	sudo apt-get install -y apache2 libapache2-mod-php5 php-pear php5-curl php5-sqlite php5-mysql acl curl git
@@ -37,7 +38,7 @@ fi
 HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 
 sudo mkdir -p /opt/codebender
-sudo cp -r . /opt/codebender/$PACKAGENAME
+sudo cp -r ./ /opt/codebender/$PACKAGENAME
 sudo chown -R `whoami`:$HTTPDUSER /opt/codebender/$PACKAGENAME
 cd /opt/codebender/$PACKAGENAME
 
@@ -86,9 +87,7 @@ cd Symfony
 ## For reference, here's a command to replace a substring in a file
 ## cat kourades.sh  | sed 's/kourades/skata/g' | tee skata.sh  > /dev/null 2>&1
 
-# cp app/config/parameters.yml.dist app/config/parameters.yml
-cat app/config/parameters.yml.dist  | sed 's/database_pass: ~/database_pass: hello/g' > app/config/parameters.yml
-
+cp app/config/parameters.yml.dist app/config/parameters.yml
 
 set +x
 cat app/config/parameters.yml | grep -v "compiler:" | tee app/config/parameters.yml > /dev/null
@@ -101,10 +100,6 @@ set -x
 
 curl -s http://getcomposer.org/installer | php
 php composer.phar install
-#php app/console doctrine:database:create
-#php app/console doctrine:schema:create
-#yes | php app/console doctrine:fixtures:load
-#php app/console codebender:tests:install
 
 # TODO: Add this later on (Apache config)
 #sudo cp /opt/codebender/$PACKAGENAME/apache-config /etc/apache2/sites-available/codebender
