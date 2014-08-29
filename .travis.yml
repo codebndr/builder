@@ -15,7 +15,7 @@ env:
 before_script:
 #  - mysql -u root -e "UPDATE user SET Password=PASSWORD('hello') WHERE User='root';FLUSH PRIVILEGES;" mysql
 #  - sudo service mysql restart
-  - scripts/install.sh
+  - Scripts/install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
   - echo 'error_reporting =  E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
