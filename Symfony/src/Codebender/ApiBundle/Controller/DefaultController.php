@@ -133,7 +133,7 @@ class DefaultController extends Controller
                     foreach ($data['files'] as $file) {
                         $foundFiles[] = $file['filename'];
                     }
-                } else {
+                } elseif (!$data['success']){
                     $notFoundHeaders[] = $header . ".h";
                 }
             }
