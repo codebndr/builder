@@ -20,6 +20,7 @@ class DefaultController extends Controller
     public function compilelibrariesAction()
     {
         $request = $this->getRequest()->getContent();
+
         $contents = json_decode($request, true);
 
         $apihandler = $this->get('codebender_api.handler');
