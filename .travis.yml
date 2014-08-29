@@ -13,23 +13,21 @@ env:
     - secure: "LDq5UcA6AA0OJtt4Z97Kig/AGcg/b3STF+d6DAMoI2FfPGSIItc4oHTM4chhG9KK2ybGHkCKTBCWOwBJAW3YciMygiNG9QsI7y6v11ptLxPVf0YO2lercCaHq8C5xCXbEpqt84JkSawjTXAqFOHTnrQufzqbve5eDXZpnS2giXM="
 
 before_script:
-#  - mysql -u root -e "UPDATE user SET Password=PASSWORD('hello') WHERE User='root';FLUSH PRIVILEGES;" mysql
-#  - sudo service mysql restart
-  - sudo chmod +x Scripts/install.sh
-  - Scripts/install.sh
+  - sudo chmod +x scripts/install.sh
+  - scripts/install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
   - echo 'error_reporting =  E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 script:
   - mkdir -p build/logs
-#  - bin/phpunit -c app/ --coverage-clover build/logs/clover.xml --stderr
-#  - bin/phpcpd --log-pmd build/pmd-cpd.xml --exclude app --exclude vendor --names-exclude *Test.php -n .
-#   - bin/phpmd src/Codebender/ xml cleancode,codesize,design,naming,unusedcode --exclude *Test.php --reportfile build/pmd.xml
+  - bin/phpunit -c app/ --coverage-clover build/logs/clover.xml --stderr
+  - bin/phpcpd --log-pmd build/pmd-cpd.xml --exclude app --exclude vendor --names-exclude *Test.php -n .
+  - bin/phpmd src/Codebender/ xml cleancode,codesize,design,naming,unusedcode --exclude *Test.php --reportfile build/pmd.xml
 
 after_script:
-#  - php composer.phar install --dev
-#  - php bin/coveralls -v
+  - php composer.phar install --dev
+  - php bin/coveralls -v
 
 notifications:
   irc: "chat.freenode.net#codebender.cc"
