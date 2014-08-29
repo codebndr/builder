@@ -15,3 +15,5 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
     compiler: 'http://compilerurl.com/'
     library: 'http://libraryappurl.com/'
+    auth_key: authenticationekey
+    version: version

@@ -17,31 +17,39 @@ class DefaultController extends Controller
      * @return Response Response intance.
      *
      */
-    public function compilelibrariesAction()
+    public function compilelibrariesAction($auth_key, $version)
     {
-        $request = $this->getRequest()->getContent();
 
-        $contents = json_decode($request, true);
+        if ($auth_key !== $this->container->getParameter('auth_key'))
+        {
+            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid authorization key.")));
+        }
 
-        $apihandler = $this->get('codebender_api.handler');
+        if ($version == $this->container->getParameter('version')) {
+            $request = $this->getRequest()->getContent();
 
-        $personalMatchedLib = $contents['libraries'];
-        $files = $contents["files"];
+            $contents = json_decode($request, true);
 
-        // get library manager url.
-        $libmanager_url = $this->container->getParameter('library');
+            $apihandler = $this->get('codebender_api.handler');
 
-        $headersArr = $this->checkHeaders($files, $personalMatchedLib);
+            $personalMatchedLib = $contents['libraries'];
+            $files = $contents["files"];
 
-        $contents["libraries"] = $headersArr['libraries'];
-        $request_content = json_encode($contents);
+            // get library manager url.
+            $libmanager_url = $this->container->getParameter('library');
 
-        // compile into compiler with passing request_contents data.
-        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+            $headersArr = $this->checkHeaders($files, $personalMatchedLib);
 
-        $responsedata = array('library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
+            $contents["libraries"] = $headersArr['libraries'];
+            $request_content = json_encode($contents);
 
-        return new Response(json_encode($responsedata), 200);
+            // compile into compiler with passing request_contents data.
+            $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+
+            $responsedata = array('success' => true, 'library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
+
+            return new Response(json_encode($responsedata), 200);
+        }
     }
 
     /**

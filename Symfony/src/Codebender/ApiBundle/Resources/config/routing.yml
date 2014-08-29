@@ -1,5 +1,5 @@
 CodebenderApiBundle_compile:
-    pattern:    /compile
+    pattern:    /compile/{auth_key}/{version}
     defaults: { _controller: CodebenderApiBundle:Default:compilelibraries }
     requirements:
        _method:  POST
