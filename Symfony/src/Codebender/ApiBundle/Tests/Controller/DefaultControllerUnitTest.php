@@ -1,22 +1,22 @@
 <?php
-
-namespace Codebender\ApiBundle\Tests\Controller;
-use Codebender\ApiBundle\Controller\DefaultController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-
-class ProtectedDefaultControllerTester extends DefaultController {
-
-    public function call_checkHeaders($files, $personallib)
-    {
-        return $this->checkHeaders($files, $personallib);
-    }
-
-}
-
-class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
-{
+//
+//namespace Codebender\ApiBundle\Tests\Controller;
+//use Codebender\ApiBundle\Controller\DefaultController;
+//use Symfony\Component\HttpFoundation\Request;
+//use Symfony\Component\HttpFoundation\Response;
+//
+//
+//class ProtectedDefaultControllerTester extends DefaultController {
+//
+//    public function call_checkHeaders($files, $personallib)
+//    {
+//        return $this->checkHeaders($files, $personallib);
+//    }
+//
+//}
+//
+//class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
+//{
 //    public function testCompileWebsiteAction_Success()
 //    {
 //        $controller = $this->getMock("Codebender\ApiBundle\Controller\DefaultController", array("get", "getRequest", "checkHeaders"));
@@ -113,4 +113,4 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 //    }
 
 
-}
+//}
