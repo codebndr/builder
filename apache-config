@@ -1,5 +1,6 @@
 <VirtualHost *:80>
-	<Directory /var/www/builder/Symfony/web/>
+	DocumentRoot /var/www
+	<Directory /var/www/>
 		Options -Indexes FollowSymLinks MultiViews
 		AllowOverride All
 		Order allow,deny
