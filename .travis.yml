@@ -28,7 +28,7 @@ script:
 #   - bin/phpmd src/Codebender/ xml cleancode,codesize,design,naming,unusedcode --exclude *Test.php --reportfile build/pmd.xml
 
 after_script:
-  - php composer.phar install --dev
+#  - php composer.phar install --dev
 #  - php bin/coveralls -v
 
 notifications:
