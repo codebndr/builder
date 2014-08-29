@@ -23,13 +23,13 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - bin/phpunit -c app/ --coverage-clover build/logs/clover.xml --stderr
+#  - bin/phpunit -c app/ --coverage-clover build/logs/clover.xml --stderr
 #  - bin/phpcpd --log-pmd build/pmd-cpd.xml --exclude app --exclude vendor --names-exclude *Test.php -n .
 #   - bin/phpmd src/Codebender/ xml cleancode,codesize,design,naming,unusedcode --exclude *Test.php --reportfile build/pmd.xml
 
 after_script:
   - php composer.phar install --dev
-  - php bin/coveralls -v
+#  - php bin/coveralls -v
 
 notifications:
   irc: "chat.freenode.net#codebender.cc"
