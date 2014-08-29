@@ -28,6 +28,7 @@ script:
 after_script:
   - php composer.phar install --dev
   - php bin/coveralls -v
+  - sudo chmod +x scripts/apache_install.sh
   - cd /opt/codebender/builder
   - scripts/apache_install.sh
 
