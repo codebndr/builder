@@ -12,12 +12,23 @@ use Symfony\Component\HttpFoundation\Request;
 class DefaultController extends Controller
 {
     /**
-     * compilelibraries action
+     * status action
      *
      * @return Response Response intance.
      *
      */
-    public function compilelibrariesAction($auth_key, $version)
+    public function statusAction()
+    {
+        return new Response(json_encode(array("success" => true, "status" => "OK")));
+    }
+
+    /**
+     * compileWebsite action
+     *
+     * @return Response Response intance.
+     *
+     */
+    public function compileWebsiteAction($auth_key, $version)
     {
 
         if ($auth_key !== $this->container->getParameter('auth_key'))
@@ -25,31 +36,70 @@ class DefaultController extends Controller
             return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid authorization key.")));
         }
 
-        if ($version == $this->container->getParameter('version')) {
-            $request = $this->getRequest()->getContent();
-
-            $contents = json_decode($request, true);
-
-            $apihandler = $this->get('codebender_api.handler');
-
-            $personalMatchedLib = $contents['libraries'];
-            $files = $contents["files"];
-
-            // get library manager url.
-            $libmanager_url = $this->container->getParameter('library');
-
-            $headersArr = $this->checkHeaders($files, $personalMatchedLib);
-
-            $contents["libraries"] = $headersArr['libraries'];
-            $request_content = json_encode($contents);
-
-            // compile into compiler with passing request_contents data.
-            $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
-
-            $responsedata = array('success' => true, 'library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
-
-            return new Response(json_encode($responsedata), 200);
+        if ($version !== $this->container->getParameter('version'))
+        {
+            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid api version.")));
         }
+
+        $request = $this->getRequest()->getContent();
+
+        $contents = json_decode($request, true);
+
+        $apihandler = $this->get('codebender_api.handler');
+
+        $personalMatchedLibs = $contents['libraries'];
+
+        $files = $contents["files"];
+
+        $headersArr = $this->checkHeaders($files, $personalMatchedLibs);
+
+        $contents["libraries"] = $headersArr['libraries'];
+        $request_content = json_encode($contents);
+
+        // perform the actual post to the compiler
+        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+
+        $responsedata = array('success' => true, 'personal' => $personalMatchedLibs,  'library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
+
+        return new Response(json_encode($responsedata));
+    }
+
+    /**
+     * compile action
+     *
+     * @return Response Response intance.
+     *
+     */
+    public function compileAction($auth_key, $version)
+    {
+
+        if ($auth_key !== $this->container->getParameter('auth_key'))
+        {
+            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid authorization key.")));
+        }
+
+        if ($version !== $this->container->getParameter('version'))
+        {
+            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid api version.")));
+        }
+
+        $request = $this->getRequest()->getContent();
+
+        $contents = json_decode($request, true);
+
+        $apihandler = $this->get('codebender_api.handler');
+
+        $files = $contents["files"];
+
+        $headersArr = $this->checkHeaders($files, array());
+
+        $contents["libraries"] = $headersArr['libraries'];
+        $request_content = json_encode($contents);
+
+        // perform the actual post to the compiler
+        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+
+        return new Response($data);
     }
 
     /**
