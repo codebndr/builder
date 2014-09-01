@@ -121,9 +121,18 @@ class DefaultController extends Controller
         // get library manager url
         $libmanager_url = $this->container->getParameter('library');
 
+        // TODO: improve this.
+        $personal_lib_keys = array_keys($personalLibs);
+        $foundPersonal = false;
         $libraries = $personalLibs;
         foreach ($headers as $header) {
-            if (!in_array($header, $personalLibs)) {
+            $foundPersonal = false;
+            foreach ($personal_lib_keys as $key){
+                if (strpos($key, "cb_personal_lib_".$header) !== false){
+                    $foundPersonal = true;
+                }
+            }
+            if ($foundPersonal === false) {
 
                 $data = $apiHandler->get($libmanager_url . "/fetch?library=" . urlencode($header));
                 $data = json_decode($data, true);
