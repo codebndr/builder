@@ -58,8 +58,9 @@ class DefaultController extends Controller
 
         // perform the actual post to the compiler
         $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+        $decoded_compiler_data = json_decode($data, true);
 
-        $responsedata = array('success' => true, 'personal' => $personalMatchedLibs,  'library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $data);
+        $responsedata = array('success' => true, 'personal' => array_keys($personalMatchedLibs), 'library' => $headersArr['libraries'], 'foundFiles' => $headersArr['foundFiles'], 'notFoundHeaders' => $headersArr['notFoundHeaders'], 'compileResponse' => $decoded_compiler_data);
 
         return new Response(json_encode($responsedata));
     }
