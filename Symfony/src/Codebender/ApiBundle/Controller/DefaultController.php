@@ -92,7 +92,11 @@ class DefaultController extends Controller
 
         $files = $contents["files"];
 
-        $headersArr = $this->checkHeaders($files, array());
+        $userlibs = array();
+        if (array_key_exists('libraries', $contents))
+            $userlibs = $contents['libraries'];
+
+        $headersArr = $this->checkHeaders($files, $userlibs);
 
         $contents["libraries"] = $headersArr['libraries'];
         $request_content = json_encode($contents);
