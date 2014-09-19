@@ -92,14 +92,14 @@ class DefaultController extends Controller
 
         $files = $contents["files"];
 
-        $files[] = array('filename' => 'user_null.txt', 'content' => '');
-        $files[] = array('filename' => 'null.txt', 'content' => '');
-
         $userlibs = array();
         if (array_key_exists('libraries', $contents))
             $userlibs = $contents['libraries'];
 
         $headersArr = $this->checkHeaders($files, $userlibs);
+
+        $contents['files'][] = array('filename' => 'user_null.txt', 'content' => '');
+        $contents['files'][] = array('filename' => 'null.txt', 'content' => '');
 
         $contents["libraries"] = $headersArr['libraries'];
         $request_content = json_encode($contents);
