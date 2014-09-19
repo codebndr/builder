@@ -92,6 +92,9 @@ class DefaultController extends Controller
 
         $files = $contents["files"];
 
+        $files[] = array('filename' => 'user_null.txt', 'content' => '');
+        $files[] = array('filename' => 'null.txt', 'content' => '');
+
         $userlibs = array();
         if (array_key_exists('libraries', $contents))
             $userlibs = $contents['libraries'];
