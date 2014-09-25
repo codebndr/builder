@@ -84,6 +84,11 @@ class DefaultController extends Controller
             return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid api version.")));
         }
 
+        if (empty($request))
+        {
+            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid input.")));
+        }
+
         $request = $this->getRequest()->getContent();
 
         $contents = json_decode($request, true);
