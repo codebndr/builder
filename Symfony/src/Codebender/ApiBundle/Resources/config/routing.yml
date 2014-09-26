@@ -2,14 +2,8 @@ CodebenderApiBundle_status_check:
     pattern:  /status
     defaults: { _controller: CodebenderApiBundle:Default:status }
 
-CodebenderApiBundle_cb_website_compile:
-    pattern:    /{auth_key}/{version}/website/compile
-    defaults: { _controller: CodebenderApiBundle:Default:compileWebsite }
-    requirements:
-       _method:  POST
-
 CodebenderApiBundle_compile:
     pattern:    /{auth_key}/{version}/compile
     defaults: { _controller: CodebenderApiBundle:Default:compile }
     requirements:
-       _method:  POST
+      _method: POST
