@@ -33,20 +33,19 @@ class DefaultController extends Controller
 
         if ($auth_key !== $this->container->getParameter('auth_key'))
         {
-            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid authorization key.")));
+            return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
         }
 
         if ($version !== $this->container->getParameter('version'))
         {
-            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid api version.")));
-        }
-
-        if (empty($request))
-        {
-            return new Response(json_encode(array("success" => false, "step" => 0, "message" => "Invalid input.")));
+            return new Response(json_encode(array("success" => false, "message" => "Invalid api version.")));
         }
 
         $request = $this->getRequest()->getContent();
+        if (empty($request))
+        {
+            return new Response(json_encode(array("success" => false, "message" => "Invalid input.")));
+        }
 
         $contents = json_decode($request, true);
 
@@ -54,22 +53,35 @@ class DefaultController extends Controller
 
         $files = $contents["files"];
 
+        $this->checkForUserProject($files);
+
         $userlibs = array();
+
         if (array_key_exists('libraries', $contents))
             $userlibs = $contents['libraries'];
 
-        $headersArr = $this->checkHeaders($files, $userlibs);
+        $parsedLibs = $this->checkHeaders($files, $userlibs);
 
-        $contents['files'][] = array('filename' => 'user_null.txt', 'content' => '');
-        $contents['files'][] = array('filename' => 'null.txt', 'content' => '');
+        $contents["libraries"] = $parsedLibs['libraries'];
 
-        $contents["libraries"] = $headersArr['libraries'];
         $request_content = json_encode($contents);
 
         // perform the actual post to the compiler
         $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
 
-        return new Response($data);
+        $decoded = json_decode($data, true);
+        if ($decoded == null)
+        {
+            return new Response(json_encode(array("success" => false, "message"=> "Failed to get compiler response.")));
+        }
+
+        if ($decoded["success"] === false && !array_key_exists("step", $decoded))
+            $decoded["step"] = "unknown";
+
+        unset($parsedLibs['libraries']);
+        $decoded['additionalCode'] = $parsedLibs;
+
+        return new Response(json_encode($decoded));
     }
 
     /**
