@@ -125,8 +125,13 @@ class DefaultController extends Controller
 
                 if ($data["success"]) {
                     $fetchedLibs[] = $header;
+                    $files_to_add = array();
+                    foreach ($data["files"] as $file){
+                        if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'c', 'S', 'inc')))
+                            $files_to_add[] = $file;
+                    }
 
-                    $libraries[$header] = $data["files"];
+                    $libraries[$header] = $files_to_add;
                     $foundHeaders[] = $header . ".h";
 
                 } elseif (!$data['success']){
