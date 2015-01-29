@@ -23,14 +23,18 @@ class DefaultController extends Controller
     }
 
     /**
-     * compile action
+     * Gets a request for compilation or library fetching (depends on the 'type' field of the request)
+     * and passes the request to either the compiler or the library manager.
      *
-     * @return Response Response intance.
+     * Includes several checks in order to ensure the validity of the data provided as well
+     * as authentication.
      *
+     * @param $auth_key
+     * @param $version
+     * @return Response
      */
-    public function compileAction($auth_key, $version)
+    public function handleRequestAction($auth_key, $version)
     {
-
         if ($auth_key !== $this->container->getParameter('auth_key'))
         {
             return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
@@ -49,18 +53,48 @@ class DefaultController extends Controller
 
         $contents = json_decode($request, true);
 
+        if ($contents === NULL)
+        {
+            return new Response(json_encode(array("success" => false, "message" => "Wrong data.")));
+        }
+
+        if (!array_key_exists("data", $contents))
+        {
+            return new Response(json_encode(array("success" => false, "message" => "Insufficient data provided.")));
+        }
+
+        if ($contents["type"] == "compiler") {
+            return new Response($this->compile($contents["data"]));
+        }
+
+        if ($contents["type"] == "library")
+        {
+            return new Response($this->getLibraryInfo(json_encode($contents["data"])));
+        }
+
+        return new Response(json_encode(array("success" => false, "message" => "Invalid request type (can handle only 'compiler' or 'library' requests)")));
+    }
+
+    /**
+     * Gets the data from the handleRequestAction and proceeds with the compilation
+     *
+     * @param $contents
+     * @return Response
+     */
+    protected function compile($contents)
+    {
         $apihandler = $this->get('codebender_api.handler');
 
         $files = $contents["files"];
 
         $this->checkForUserProject($files);
 
-        $userlibs = array();
+        $userLibs = array();
 
         if (array_key_exists('libraries', $contents))
-            $userlibs = $contents['libraries'];
+            $userLibs = $contents['libraries'];
 
-        $parsedLibs = $this->checkHeaders($files, $userlibs);
+        $parsedLibs = $this->checkHeaders($files, $userLibs);
 
         $contents["libraries"] = $parsedLibs['libraries'];
 
@@ -70,18 +104,37 @@ class DefaultController extends Controller
         $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
 
         $decoded = json_decode($data, true);
-        if ($decoded == null)
+        if ($decoded === NULL)
         {
-            return new Response(json_encode(array("success" => false, "message"=> "Failed to get compiler response.")));
+            return json_encode(array("success" => false, "message"=> "Failed to get compiler response."));
         }
 
         if ($decoded["success"] === false && !array_key_exists("step", $decoded))
+        {
             $decoded["step"] = "unknown";
+        }
 
         unset($parsedLibs['libraries']);
         $decoded['additionalCode'] = $parsedLibs;
 
-        return new Response(json_encode($decoded));
+        return json_encode($decoded);
+    }
+
+    /**
+     * Gets a request for library information from the handleRequestAction and makes the
+     * actual call to the library manager.
+     * The data must be already json encoded before passing them to this function.
+     *
+     * @param $data
+     * @return mixed
+     */
+    protected function getLibraryInfo($data)
+    {
+        $handler = $this->get('codebender_api.handler');
+
+        $libraryManager = $this->container->getParameter('library');
+
+        return $handler->post_raw_data($libraryManager, $data);
     }
 
     /**
@@ -91,7 +144,7 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    protected function checkHeaders($files,  array $userlibs)
+    protected function checkHeaders($files, $userLibs)
     {
         $apiHandler = $this->get('codebender_api.handler');
 
@@ -100,17 +153,14 @@ class DefaultController extends Controller
         // declare arrays
         $libraries = $notFoundHeaders = $foundHeaders = $fetchedLibs = $providedLibs = array();
 
-        $providedLibs = array_keys($userlibs);
+        $providedLibs = array_keys($userLibs);
 
-        // get library manager url
-        $libmanager_url = $this->container->getParameter('library');
-
-        $libraries = $userlibs;
+        $libraries = $userLibs;
 
         foreach ($headers as $header) {
 
             $exists_in_request = false;
-            foreach ($userlibs as $lib){
+            foreach ($userLibs as $lib){
                 foreach ($lib as $libcontent){
                     if ($libcontent["filename"] == $header.".h") {
                         $exists_in_request = true;
@@ -120,7 +170,8 @@ class DefaultController extends Controller
             }
             if ($exists_in_request === false) {
 
-                $data = $apiHandler->get($libmanager_url . "/fetch?library=" . urlencode($header));
+                $requestContent = array("type" => "fetch", "library" => $header);
+                $data = $this->getLibraryInfo(json_encode($requestContent));
                 $data = json_decode($data, true);
 
                 if ($data["success"]) {
