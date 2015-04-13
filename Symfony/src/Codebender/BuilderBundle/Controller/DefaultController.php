@@ -1,6 +1,6 @@
 <?php
 
-namespace Codebender\ApiBundle\Controller;
+namespace Codebender\BuilderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ class DefaultController extends Controller
     /**
      * status action
      *
-     * @return Response Response intance.
+     * @return Response Response instance.
      *
      */
     public function statusAction()
@@ -130,7 +130,7 @@ class DefaultController extends Controller
      */
     protected function getLibraryInfo($data)
     {
-        $handler = $this->get('codebender_api.handler');
+        $handler = $this->get('codebender_builder.handler');
 
         $libraryManager = $this->container->getParameter('library');
 

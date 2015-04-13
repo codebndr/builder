@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('codebender_api');
+        $treeBuilder->root('codebender_builder');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

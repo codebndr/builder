@@ -1,9 +1,0 @@
-CodebenderApiBundle_status_check:
-    pattern:  /status
-    defaults: { _controller: CodebenderApiBundle:Default:status }
-
-CodebenderApiBundle_compile:
-    pattern:    /{auth_key}/{version}
-    defaults: { _controller: CodebenderApiBundle:Default:handleRequest }
-    requirements:
-      _method: POST
