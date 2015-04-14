@@ -108,9 +108,9 @@ class DefaultController extends Controller
         }
 
         unset($userAndLibmanLibraries['libraries']);
-        $decoded['additionalCode'] = $userAndLibmanLibraries;
+        $decodedResponse['additionalCode'] = $userAndLibmanLibraries;
 
-        return json_encode($decoded);
+        return json_encode($decodedResponse);
     }
 
     /**
