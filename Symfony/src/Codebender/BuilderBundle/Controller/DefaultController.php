@@ -29,13 +29,13 @@ class DefaultController extends Controller
      * Includes several checks in order to ensure the validity of the data provided as well
      * as authentication.
      *
-     * @param $auth_key
+     * @param $authKey
      * @param $version
      * @return Response
      */
-    public function handleRequestAction($auth_key, $version)
+    public function handleRequestAction($authKey, $version)
     {
-        if ($auth_key !== $this->container->getParameter('auth_key'))
+        if ($authKey !== $this->container->getParameter('auth_key'))
         {
             return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
         }
@@ -83,39 +83,38 @@ class DefaultController extends Controller
      */
     protected function compile($contents)
     {
-        $apihandler = $this->get('codebender_builder.handler');
+        $apiHandler = $this->get('codebender_builder.handler');
 
         $files = $contents["files"];
 
-        $this->checkForUserProject($files);
+        $this->checkForUserIdProjectId($files);
 
-        $userLibs = array();
+        $userLibraries = array();
 
-        if (array_key_exists('libraries', $contents))
-            $userLibs = $contents['libraries'];
+        if (array_key_exists('libraries', $contents)) {
+            $userLibraries = $contents['libraries'];
+        }
 
-        $parsedLibs = $this->checkHeaders($files, $userLibs);
+        $userAndLibmanLibraries = $this->returnProvidedAndFetchedLibraries($files, $userLibraries);
 
-        $contents["libraries"] = $parsedLibs['libraries'];
+        $contents["libraries"] = $userAndLibmanLibraries['libraries'];
 
-        $request_content = json_encode($contents);
+        $compilerRequestContent = json_encode($contents);
 
         // perform the actual post to the compiler
-        $data = $apihandler->post_raw_data($this->container->getParameter('compiler'), $request_content);
+        $data = $apiHandler->postRawData($this->container->getParameter('compiler'), $compilerRequestContent);
 
-        $decoded = json_decode($data, true);
-        if ($decoded === NULL)
-        {
+        $decodedResponse = json_decode($data, true);
+        if ($decodedResponse === NULL) {
             return json_encode(array("success" => false, "message"=> "Failed to get compiler response."));
         }
 
-        if ($decoded["success"] === false && !array_key_exists("step", $decoded))
-        {
-            $decoded["step"] = "unknown";
+        if ($decodedResponse["success"] === false && !array_key_exists("step", $decodedResponse)) {
+            $decodedResponse["step"] = "unknown";
         }
 
-        unset($parsedLibs['libraries']);
-        $decoded['additionalCode'] = $parsedLibs;
+        unset($userAndLibmanLibraries['libraries']);
+        $decoded['additionalCode'] = $userAndLibmanLibraries;
 
         return json_encode($decoded);
     }
@@ -134,90 +133,98 @@ class DefaultController extends Controller
 
         $libraryManager = $this->container->getParameter('library');
 
-        return $handler->post_raw_data($libraryManager, $data);
+        return $handler->postRawData($libraryManager, $data);
     }
 
     /**
      *
-     * @param array $files
-     * @param array $userLibs
+     * @param array $projectFiles
+     * @param array $userLibraries
      *
      * @return array
      */
-    protected function checkHeaders($files, $userLibs)
+    protected function returnProvidedAndFetchedLibraries($projectFiles, $userLibraries)
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
-        $headers = $apiHandler->read_libraries($files);
+        $detectedHeaders = $apiHandler->readLibraries($projectFiles);
 
         // declare arrays
-        $libraries = $notFoundHeaders = $foundHeaders = $fetchedLibs = $providedLibs = array();
+        $notFoundHeaders = array();
+        $foundHeaders = array();
+        $librariesFromLibman = array();
+        $providedLibraries = array_keys($userLibraries);
+        $libraries = $userLibraries;
 
-        $providedLibs = array_keys($userLibs);
+        foreach ($detectedHeaders as $header) {
 
-        $libraries = $userLibs;
-
-        foreach ($headers as $header) {
-
-            $exists_in_request = false;
-            foreach ($userLibs as $lib){
-                foreach ($lib as $libcontent){
-                    if ($libcontent["filename"] == $header.".h") {
-                        $exists_in_request = true;
+            $existsInRequest = false;
+            foreach ($userLibraries as $library) {
+                foreach ($library as $libraryContent) {
+                    if ($libraryContent["filename"] == $header.".h") {
+                        $existsInRequest = true;
                         $foundHeaders[] = $header . ".h";
                     }
                 }
             }
-            if ($exists_in_request === false) {
 
-                $requestContent = array("type" => "fetch", "library" => $header);
-                $data = $this->getLibraryInfo(json_encode($requestContent));
-                $data = json_decode($data, true);
-
-                if ($data["success"]) {
-                    $fetchedLibs[] = $header;
-                    $files_to_add = array();
-                    foreach ($data["files"] as $file){
-                        if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'c', 'S', 'inc')))
-                            $files_to_add[] = $file;
-                    }
-
-                    $libraries[$header] = $files_to_add;
-                    $foundHeaders[] = $header . ".h";
-
-                } elseif (!$data['success']){
-                    $notFoundHeaders[] = $header . ".h";
-                }
+            if ($existsInRequest === true) {
+                continue;
             }
+            $requestContent = array("type" => "fetch", "library" => $header);
+            $data = $this->getLibraryInfo(json_encode($requestContent));
+            $data = json_decode($data, true);
+
+            if ($data['success'] === false) {
+                $notFoundHeaders[] = $header . ".h";
+                continue;
+            }
+
+            $foundHeaders[] = $header . ".h";
+            $librariesFromLibman[] = $header;
+            $filesToBeAdded = array();
+            foreach ($data["files"] as $file) {
+                if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'c', 'S', 'inc')))
+                    $filesToBeAdded[] = $file;
+            }
+            $libraries[$header] = $filesToBeAdded;
         }
 
         return array(
             'libraries' => $libraries,
-            'providedLibraries' => $providedLibs,
-            'fetchedLibraries' => $fetchedLibs,
-            'detectedHeaders'=> $headers,
+            'providedLibraries' => $providedLibraries,
+            'fetchedLibraries' => $librariesFromLibman,
+            'detectedHeaders'=> $detectedHeaders,
             'foundHeaders' => $foundHeaders,
             'notFoundHeaders' => $notFoundHeaders);
     }
 
     /**
-      *
-      * @param array $files
       * Checks if project id and user id txt files exist in the request files.
       * If not, creates these files with null id
-     *
+      *
+      * @param array $projectFiles
       */
-    protected function checkForUserProject(&$files)
+    protected function checkForUserIdProjectId(&$projectFiles)
     {
-        $foundProj = $foundUsr = false;
+        $foundProject = false;
+        $foundUser = false;
 
-        foreach ($files as $file) {
-            if (preg_match('/(?<=user_)[\d]+/', $file['filename'])) $foundUsr = true;
-            if (preg_match('/(?<=project_)[\d]+/', $file['filename'])) $foundProj = true;
+        foreach ($projectFiles as $file) {
+            if (preg_match('/(?<=user_)[\d]+/', $file['filename'])) {
+                $foundUser = true;
+            }
+            if (preg_match('/(?<=project_)[\d]+/', $file['filename'])) {
+                $foundProject = true;
+            }
         }
 
-        if (!$foundUsr) $files[] = array('filename' => 'user_null.txt', 'content' => '');
-        if (!$foundProj) $files[] = array('filename' => 'project_null.txt', 'content' => '');
+        if (!$foundUser) {
+            $projectFiles[] = array('filename' => 'user_null.txt', 'content' => '');
+        }
+        if (!$foundProject) {
+            $projectFiles[] = array('filename' => 'project_null.txt', 'content' => '');
+        }
     }
 }
 
