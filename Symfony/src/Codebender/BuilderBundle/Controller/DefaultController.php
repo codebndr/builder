@@ -99,7 +99,7 @@ class DefaultController extends Controller
         $data = $apiHandler->postRawData($this->container->getParameter('compiler'), $compilerRequestContent);
 
         $decodedResponse = json_decode($data, true);
-        if ($decodedResponse === NULL) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             return json_encode(array("success" => false, "message"=> "Failed to get compiler response."));
         }
 
