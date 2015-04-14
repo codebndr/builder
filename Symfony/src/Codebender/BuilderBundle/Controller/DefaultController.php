@@ -35,31 +35,26 @@ class DefaultController extends Controller
      */
     public function handleRequestAction($authKey, $version)
     {
-        if ($authKey !== $this->container->getParameter('auth_key'))
-        {
+        if ($authKey !== $this->container->getParameter('auth_key')) {
             return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
         }
 
-        if ($version !== $this->container->getParameter('version'))
-        {
+        if ($version !== $this->container->getParameter('version')) {
             return new Response(json_encode(array("success" => false, "message" => "Invalid api version.")));
         }
 
         $request = $this->getRequest()->getContent();
-        if (empty($request))
-        {
+        if (empty($request)) {
             return new Response(json_encode(array("success" => false, "message" => "Invalid input.")));
         }
 
         $contents = json_decode($request, true);
 
-        if ($contents === NULL)
-        {
+        if ($contents === NULL) {
             return new Response(json_encode(array("success" => false, "message" => "Wrong data.")));
         }
 
-        if (!array_key_exists("data", $contents))
-        {
+        if (!array_key_exists("data", $contents)) {
             return new Response(json_encode(array("success" => false, "message" => "Insufficient data provided.")));
         }
 
@@ -67,8 +62,7 @@ class DefaultController extends Controller
             return new Response($this->compile($contents["data"]));
         }
 
-        if ($contents["type"] == "library")
-        {
+        if ($contents["type"] == "library") {
             return new Response($this->getLibraryInfo(json_encode($contents["data"])));
         }
 
