@@ -1,6 +1,6 @@
 <?php
 
-namespace Codebender\ApiBundle\Handler;
+namespace Codebender\BuilderBundle\Handler;
 
 class DefaultHandler
 {
