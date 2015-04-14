@@ -83,7 +83,7 @@ class DefaultController extends Controller
      */
     protected function compile($contents)
     {
-        $apihandler = $this->get('codebender_api.handler');
+        $apihandler = $this->get('codebender_builder.handler');
 
         $files = $contents["files"];
 
@@ -146,7 +146,7 @@ class DefaultController extends Controller
      */
     protected function checkHeaders($files, $userLibs)
     {
-        $apiHandler = $this->get('codebender_api.handler');
+        $apiHandler = $this->get('codebender_builder.handler');
 
         $headers = $apiHandler->read_libraries($files);
 
