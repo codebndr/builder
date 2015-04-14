@@ -50,7 +50,7 @@ class DefaultController extends Controller
 
         $contents = json_decode($request, true);
 
-        if ($contents === NULL) {
+        if ($contents === null || $contents === false) {
             return new Response(json_encode(array("success" => false, "message" => "Wrong data.")));
         }
 
