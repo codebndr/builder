@@ -1,0 +1,9 @@
+CodebenderBuilderBundle_status_check:
+    pattern:  /status
+    defaults: { _controller: CodebenderBuilderBundle:Default:status }
+
+CodebenderBuilderBundle_handle_request:
+    pattern:    /{authKey}/{version}/
+    defaults: { _controller: CodebenderBuilderBundle:Default:handleRequest }
+    requirements:
+      _method: POST

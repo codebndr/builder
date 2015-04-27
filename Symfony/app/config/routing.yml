@@ -1,4 +1,4 @@
-codebenderApiBundle:
-    resource: "@CodebenderApiBundle/Resources/config/routing.yml"
+codebenderBuilderBundle:
+    resource: "@CodebenderBuilderBundle/Resources/config/routing.yml"
     prefix:   /
 
