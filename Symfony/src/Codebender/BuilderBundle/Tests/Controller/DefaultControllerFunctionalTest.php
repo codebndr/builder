@@ -24,10 +24,9 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestGet() {
         $client = static::createClient();
 
-        /*
-         * Using the same auth key and version like the ones in the dist parameter file
-         */
-        $client->request('GET', '/authKey/v1');
+        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $apiVersion = $client->getContainer()->getParameter('version');
+        $client->request('GET', "/{$authorizationKey}/{$apiVersion}/");
 
         $this->assertEquals($client->getResponse()->getStatusCode(), 405);
     }
@@ -35,10 +34,12 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestCompile() {
         $client = static::createClient();
 
+        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
                 'POST',
-                'authenticationekey/version',
+                "/{$authorizationKey}/{$apiVersion}/",
                 $parameters = array(),
                 $files = array(),
                 $server = array(),
@@ -54,10 +55,12 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestLibraryFetching() {
         $client = static::createClient();
 
+        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
                 'POST',
-                'authenticationekey/version',
+                "/{$authorizationKey}/{$apiVersion}/",
                 $parameters = array(),
                 $files = array(),
                 $server = array(),
@@ -74,10 +77,12 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestLibraryKeywords() {
         $client = static::createClient();
 
+        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
                 'POST',
-                'authenticationekey/version',
+                "/{$authorizationKey}/{$apiVersion}/",
                 $parameters = array(),
                 $files = array(),
                 $server = array(),
