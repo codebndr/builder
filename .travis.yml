@@ -9,8 +9,10 @@ php:
 
 env:
   global:
-    - secure: "ghxjxZnqzsr2dnyAMMv7OK1hgJJaUmkM7dYZst5FxdmUQweXy9DYxyhLl4ewQs0H7vNt7oyIGjWbKlzS02aeOeD5FeA/3CRbDbw3r1iboWm9vzXiNpeLAoBNhJ8pFKv+r2EWikdSeU5FWDb8t4O58VQFzIXXuY+xZPlbzIGNPUE="
-    - secure: "LDq5UcA6AA0OJtt4Z97Kig/AGcg/b3STF+d6DAMoI2FfPGSIItc4oHTM4chhG9KK2ybGHkCKTBCWOwBJAW3YciMygiNG9QsI7y6v11ptLxPVf0YO2lercCaHq8C5xCXbEpqt84JkSawjTXAqFOHTnrQufzqbve5eDXZpnS2giXM="
+    # eratosthenes library management system url (encrypted)
+    - secure: "ZYn4o229W7hq1uzj/Tii9h/a3iJlr9Li4TBaTNFXm6JY2H49lA57L1DIFUaTleTUx2Ibs2+kUrV3NFQ9Mo/ThO67gV5Q1XEMjxgFzAKt4AuWJ5TNbHxs3GBTjYc+129QCKSd0WdzrRDqEC2nZ9GjI+j7lS39DrjAMGg4wEp9b0U="
+    # codebender compiler url (encrypted)
+    - secure: "XRsqGDqdu5uhdj2lF4SZ6qv6Y0PdcRPcvE13XvVGnIYRZaITelP3eJNSvLPO+Q5k4mBmKCz8t+ws/OVRRwSAXYaKe0Z8ZXgEcNyo1nEwGekC35mTuG1FFfB/pbuBp5/OWjw6bgz2tEHhKuFIbHytpT9zJQYy+D07rzOYeUsZjOY="
 
 before_script:
   - sudo chmod +x scripts/install.sh
