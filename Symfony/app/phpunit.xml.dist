@@ -8,9 +8,14 @@
          bootstrap="bootstrap.php.cache"
 >
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>../src/*/*Bundle/Tests</directory>
-            <directory>../src/*/Bundle/*Bundle/Tests</directory>
+        <testsuite name="Unit Test Suite">
+            <directory suffix="UnitTest.php">../src/*/*Bundle/Tests</directory>
+            <directory suffix="UnitTest.php">../src/*/Bundle/*Bundle/Tests</directory>
+        </testsuite>
+
+        <testsuite name="Functional Test Suite">
+            <directory suffix="FunctionalTest.php">../src/*/*Bundle/Tests</directory>
+            <directory suffix="FunctionalTest.php">../src/*/Bundle/*Bundle/Tests</directory>
         </testsuite>
     </testsuites>
 

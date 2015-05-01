@@ -74,6 +74,8 @@ class DefaultController extends Controller
      *
      * @param $contents
      * @return Response
+     *
+     * @SuppressWarnings(PHPMD.LongVariable)
      */
     protected function compile($contents)
     {
