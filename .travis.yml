@@ -18,6 +18,10 @@ before_script:
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
   - echo 'error_reporting =  E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - cd /opt/codebender/builder
+  - sudo chmod +x scripts/apache_install.sh
+  - scripts/apache_install.sh
+  - cd /opt/codebender/builder/Symfony
 
 script:
   - mkdir -p build/logs
@@ -28,9 +32,6 @@ script:
 after_script:
   - php composer.phar install --dev
   - php bin/coveralls -v
-  - cd /opt/codebender/builder
-  - sudo chmod +x scripts/apache_install.sh
-  - scripts/apache_install.sh
 
 notifications:
   irc: "chat.freenode.net#codebender.cc"
