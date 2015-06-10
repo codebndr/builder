@@ -35,7 +35,7 @@ class DefaultController extends Controller
      */
     public function handleRequestAction($authKey, $version)
     {
-        if ($authKey !== $this->container->getParameter('auth_key')) {
+        if ($authKey !== $this->container->getParameter('authorizationKey')) {
             return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
         }
 

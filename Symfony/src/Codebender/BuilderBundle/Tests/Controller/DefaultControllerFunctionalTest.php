@@ -24,7 +24,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestGet() {
         $client = static::createClient();
 
-        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
         $apiVersion = $client->getContainer()->getParameter('version');
         $client->request('GET', "/{$authorizationKey}/{$apiVersion}/");
 
@@ -34,7 +34,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestCompile() {
         $client = static::createClient();
 
-        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
         $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
@@ -55,7 +55,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestLibraryFetching() {
         $client = static::createClient();
 
-        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
         $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
@@ -77,7 +77,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
     public function testHandleRequestLibraryKeywords() {
         $client = static::createClient();
 
-        $authorizationKey = $client->getContainer()->getParameter('auth_key');
+        $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
         $apiVersion = $client->getContainer()->getParameter('version');
         $client
             ->request(
