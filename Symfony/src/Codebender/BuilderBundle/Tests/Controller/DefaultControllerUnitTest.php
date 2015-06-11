@@ -18,7 +18,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->once())->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->once())->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
 
         $actionResponse = $controller->handleRequestAction('invalidAuthKey', 'v1');
 
@@ -29,7 +29,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v2'));
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
@@ -41,7 +41,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
 
         $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
@@ -56,7 +56,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
 
         $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
@@ -71,7 +71,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
 
         $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
@@ -93,7 +93,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->setContainer($container);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
 
         $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
@@ -117,7 +117,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->setContainer($container);
 
-        $container->expects($this->at(0))->method('getParameter')->with('auth_key')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
         $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
 
         $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
