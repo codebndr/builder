@@ -93,8 +93,8 @@ set +x
 cat app/config/parameters.yml | grep -v "compiler:" | tee app/config/parameters.yml > /dev/null
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
 
-cat app/config/parameters.yml | grep -v "library:" | tee app/config/parameters.yml > /dev/null
-echo "    library: '$LIBRARY_URL'" >> app/config/parameters.yml
+cat app/config/parameters.yml | grep -v "library_manager:" | tee app/config/parameters.yml > /dev/null
+echo "    library_manager: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 
 
