@@ -75,10 +75,10 @@ cd Symfony
 cp app/config/parameters.yml.dist app/config/parameters.yml
 
 set +x
-cat app/config/parameters.yml | grep -v "compiler:" | tee app/config/parameters.yml > /dev/null
+cat app/config/parameters.yml | grep -iv "compiler:" > app/config/parameters.yml
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
 
-cat app/config/parameters.yml | grep -v "library:" | tee app/config/parameters.yml > /dev/null
+cat app/config/parameters.yml | grep -v "library:" > app/config/parameters.yml
 echo "    library: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 
