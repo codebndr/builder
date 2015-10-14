@@ -50,6 +50,10 @@ rm -rf Symfony/app/logs/*
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
 	if [[ ! $TRAVIS ]]; then
+	    # Need to create cache and logs directories, as they do not pre-exist in new deployments
+	    mkdir -p `pwd`/Symfony/app/cache/
+		mkdir -p `pwd`/Symfony/app/logs/
+
         # Set access control for both apache and current user on cache and logs directories
 		sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
 		sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
