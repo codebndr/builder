@@ -1,9 +1,10 @@
 <VirtualHost *:80>
-	DocumentRoot /var/www
-	<Directory /var/www/>
-		Options -Indexes FollowSymLinks MultiViews
-		AllowOverride All
-		Order allow,deny
-		Allow from all
-	</Directory>
+    DocumentRoot /opt/codebender/builder/Symfony/web
+    DirectoryIndex app.php
+    SetEnv APPLICATION_ENV "production"
+    <Directory /opt/codebender/builder/Symfony/web>
+        Options -Indexes +FollowSymLinks +MultiViews
+        Require all granted
+        AllowOverride All
+    </Directory>
 </VirtualHost>

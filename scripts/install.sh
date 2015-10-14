@@ -22,7 +22,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     sudo service apache2 restart
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	# is there something comparable to this on os x? perhaps Homebrew
-	echo "Configuring environment for OS X"
+	echo "Configuring environment for OS X (to be added..)"
 fi
 
 if [[ ! $TRAVIS ]]; then
@@ -50,26 +50,7 @@ rm -rf Symfony/app/logs/*
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
 	if [[ ! $TRAVIS ]]; then
-
-		sudo dd if=/dev/zero of=cache-fs bs=1024 count=0 seek=200000
-		sudo dd if=/dev/zero of=logs-fs bs=1024 count=0 seek=200000
-
-		yes | sudo mkfs.ext4 cache-fs
-		yes | sudo mkfs.ext4 logs-fs
-
-		mkdir -p `pwd`/Symfony/app/cache/
-		mkdir -p `pwd`/Symfony/app/logs/
-
-		echo "`pwd`/cache-fs `pwd`/Symfony/app/cache/ ext4 loop,acl 0 0" | sudo tee -a /etc/fstab > /dev/null 2>&1
-		echo "`pwd`/logs-fs `pwd`/Symfony/app/logs/ ext4 loop,acl 0 0" | sudo tee -a /etc/fstab > /dev/null 2>&1
-		cat /etc/fstab
-
-		sudo mount `pwd`/Symfony/app/cache/
-		sudo mount `pwd`/Symfony/app/logs/
-
-		sudo rm -rf `pwd`/Symfony/app/cache/*
-		sudo rm -rf `pwd`/Symfony/app/logs/*
-
+        # Set access control for both apache and current user on cache and logs directories
 		sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
 		sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
 	fi
