@@ -72,13 +72,10 @@ cd Symfony
 ## For reference, here's a command to replace a substring in a file
 ## cat kourades.sh  | sed 's/kourades/skata/g' | tee skata.sh  > /dev/null 2>&1
 
-cp app/config/parameters.yml.dist app/config/parameters.yml
-
 set +x
-cat app/config/parameters.yml | grep -iv "compiler:" > app/config/parameters.yml
+cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library:" > app/config/parameters.yml
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
 
-cat app/config/parameters.yml | grep -v "library:" > app/config/parameters.yml
 echo "    library: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 
