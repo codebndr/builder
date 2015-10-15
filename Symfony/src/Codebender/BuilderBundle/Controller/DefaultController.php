@@ -81,9 +81,9 @@ class DefaultController extends Controller
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
-        $files = $contents["files"];
+        $contents = $this->checkForUserIdProjectId($contents);
 
-        $this->checkForUserIdProjectId($files);
+        $files = $contents["files"];
 
         $userLibraries = array();
 
@@ -199,28 +199,20 @@ class DefaultController extends Controller
       * Checks if project id and user id txt files exist in the request files.
       * If not, creates these files with null id
       *
-      * @param array $projectFiles
+      * @param array $requestContents
+      * @return array
       */
-    protected function checkForUserIdProjectId(&$projectFiles)
+    protected function checkForUserIdProjectId($requestContents)
     {
-        $foundProject = false;
-        $foundUser = false;
-
-        foreach ($projectFiles as $file) {
-            if (preg_match('/(?<=user_)[\d]+/', $file['filename'])) {
-                $foundUser = true;
-            }
-            if (preg_match('/(?<=project_)[\d]+/', $file['filename'])) {
-                $foundProject = true;
-            }
+        if (!array_key_exists('userId', $requestContents)) {
+            $requestContents['userId'] = 'null';
         }
 
-        if (!$foundUser) {
-            $projectFiles[] = array('filename' => 'user_null.txt', 'content' => '');
+        if (!array_key_exists('projectId', $requestContents)) {
+            $requestContents['projectId'] = 'null';
         }
-        if (!$foundProject) {
-            $projectFiles[] = array('filename' => 'project_null.txt', 'content' => '');
-        }
+
+        return $requestContents;
     }
 }
 
