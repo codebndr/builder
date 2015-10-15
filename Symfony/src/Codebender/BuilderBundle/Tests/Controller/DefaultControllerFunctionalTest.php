@@ -40,9 +40,9 @@ class DefaultControllerFunctionalTest extends WebTestCase
             ->request(
                 'POST',
                 "/{$authorizationKey}/{$apiVersion}/",
-                $parameters = array(),
-                $files = array(),
-                $server = array(),
+                $parameters = [],
+                $files = [],
+                $server = [],
                 $content = '{"type":"compiler","data":{"files":[{"filename":"project.ino","content":"void setup(){\n\n}\nvoid loop(){\n\n}\n"}],"format":"binary","version":"105","build":{"mcu":"atmega328p","f_cpu":"16000000L","core":"arduino","variant":"standard"}}}',
                 $changeHistory = true);
 
@@ -61,9 +61,9 @@ class DefaultControllerFunctionalTest extends WebTestCase
             ->request(
                 'POST',
                 "/{$authorizationKey}/{$apiVersion}/",
-                $parameters = array(),
-                $files = array(),
-                $server = array(),
+                $parameters = [],
+                $files = [],
+                $server = [],
                 $content = '{"type":"library","data":{"type":"fetch","library":"Ethernet"}}',
                 $changeHistory = true);
 
@@ -83,9 +83,9 @@ class DefaultControllerFunctionalTest extends WebTestCase
             ->request(
                 'POST',
                 "/{$authorizationKey}/{$apiVersion}/",
-                $parameters = array(),
-                $files = array(),
-                $server = array(),
+                $parameters = [],
+                $files = [],
+                $server = [],
                 $content = '{"type":"library","data":{"type":"getKeywords","library":"Ethernet"}}',
                 $changeHistory = true);
 
