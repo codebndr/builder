@@ -87,7 +87,7 @@ class DefaultController extends Controller
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
-        $contents = $this->checkForUserIdProjectId($contents);
+        $contents = $this->addUserIdProjectIdIfNotInRequest($contents);
 
         $files = $contents["files"];
 
@@ -210,17 +210,10 @@ class DefaultController extends Controller
       * @param array $requestContents
       * @return array
       */
-    protected function checkForUserIdProjectId($requestContents)
+    protected function addUserIdProjectIdIfNotInRequest($requestContents)
     {
-        if (!array_key_exists('userId', $requestContents)) {
-            $requestContents['userId'] = 'null';
-        }
-
-        if (!array_key_exists('projectId', $requestContents)) {
-            $requestContents['projectId'] = 'null';
-        }
-
-        return $requestContents;
+        $nullDefaults = ['userId' => 'null', 'projectId' => 'null'];
+        return array_merge($nullDefaults, (array)$requestContents);
     }
 }
 

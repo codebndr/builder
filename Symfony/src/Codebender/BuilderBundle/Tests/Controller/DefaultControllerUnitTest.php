@@ -158,7 +158,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'])
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -170,7 +170,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
             ->willReturn($apiHandler);
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(['files' => []])
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
             ->willReturn(['files' => []]);
         $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
             ->willReturn(['libraries' => []]);
@@ -191,7 +191,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'])
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -203,7 +203,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
             ->willReturn($apiHandler);
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(['files' => []])
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
             ->willReturn(['files' => []]);
         $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
             ->willReturn(['libraries' => []]);
@@ -228,7 +228,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'])
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -240,7 +240,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
             ->willReturn($apiHandler);
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(['files' => []])
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
             ->willReturn(['files' => []]);
         $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
             ->willReturn(['libraries' => []]);
@@ -435,7 +435,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
         $requestContent = ['files' => [['filename' => 'project.ino', 'content' =>'']]];
 
@@ -451,7 +451,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
         $requestContent = ['userId' => 1, 'files' => [['filename' => 'project.ino', 'content' =>'']]];
 
@@ -467,7 +467,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
         $projectFiles = ['projectId' => 1, 'files' => [['filename' => 'project.ino', 'content' =>'']]];
 
