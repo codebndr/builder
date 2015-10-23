@@ -1,11 +1,6 @@
 language: php
 php:
-#  - 5.5
-#  - 5.4
-  - 5.3
-
-#before_install:
-#  - sudo apt-get update
+  - 5.5.9
 
 env:
   global:
@@ -15,14 +10,14 @@ env:
     - secure: "XRsqGDqdu5uhdj2lF4SZ6qv6Y0PdcRPcvE13XvVGnIYRZaITelP3eJNSvLPO+Q5k4mBmKCz8t+ws/OVRRwSAXYaKe0Z8ZXgEcNyo1nEwGekC35mTuG1FFfB/pbuBp5/OWjw6bgz2tEHhKuFIbHytpT9zJQYy+D07rzOYeUsZjOY="
 
 before_script:
-  - sudo chmod +x scripts/install.sh
-  - scripts/install.sh
+  - sudo chmod +x scripts/travis_install.sh
+  - scripts/travis_install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
-  - echo 'error_reporting =  E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'error_reporting =  E_ALL' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - cd /opt/codebender/builder
-  - sudo chmod +x scripts/apache_install.sh
-  - scripts/apache_install.sh
+  - sudo chmod +x scripts/travis_apache_install.sh
+  - scripts/travis_apache_install.sh
   - cd /opt/codebender/builder/Symfony
 
 script:
@@ -37,6 +32,3 @@ after_script:
 
 notifications:
   irc: "chat.freenode.net#codebender.cc"
-#  email:
-#    recipients:
-#      - girder@codebender.cc
