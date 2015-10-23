@@ -240,9 +240,10 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
             ->willReturn($apiHandler);
-        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
-            ->willReturn(['files' => []]);
-        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')
+            ->with(['files' => [], 'libraries' => []])
+            ->willReturn(['files' => [], 'libraries' => []]);
+        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([], [])
             ->willReturn(['libraries' => []]);
 
         $container->expects($this->once())->method('getParameter')->with('compiler')
@@ -251,7 +252,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
             ->with('http://compiler/url', '{"files":[],"libraries":[]}')
             ->willReturn('{"success":false,"message":"someError","step":5}');
 
-        $functionResponse = $function->invoke($controller, ['files' => []]);
+        $functionResponse = $function->invoke($controller, ['files' => [], 'libraries' => []]);
 
         $this->assertEquals('{"success":false,"message":"someError","step":5,"additionalCode":[]}', $functionResponse);
     }
