@@ -1,19 +1,7 @@
 parameters:
-    database_driver:   pdo_mysql
-    database_host:     ~
-    database_port:     ~
-    database_name:     ~
-    database_user:     ~
-    database_password: ~
-
-    mailer_transport:  smtp
-    mailer_host:       ~
-    mailer_user:       ~
-    mailer_password:   ~
-
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
     compiler: 'http://compilerurl.com/'
-    library: 'http://libraryappurl.com/'
+    library_manager: 'http://libraryappurl.com/'
     authorizationKey: authenticationekey
     version: version

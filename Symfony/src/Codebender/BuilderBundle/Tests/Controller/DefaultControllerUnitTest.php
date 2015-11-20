@@ -237,7 +237,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
 
-        $container->expects($this->once())->method('getParameter')->with('library')->will($this->returnValue('http://library/manager'));
+        $container->expects($this->once())->method('getParameter')->with('library_manager')->will($this->returnValue('http://library/manager'));
 
         $apiHandler->expects($this->once())->method('postRawData')->with('http://library/manager', 'library data')->will($this->returnValue('Whatever'));
 
