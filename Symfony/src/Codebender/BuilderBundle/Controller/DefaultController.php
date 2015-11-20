@@ -133,7 +133,7 @@ class DefaultController extends Controller
     {
         $handler = $this->get('codebender_builder.handler');
 
-        $libraryManager = $this->container->getParameter('library');
+        $libraryManager = $this->container->getParameter('library_manager');
 
         return $handler->postRawData($libraryManager, $data);
     }

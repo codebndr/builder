@@ -63,10 +63,9 @@ cd Symfony
 ## cat kourades.sh  | sed 's/kourades/skata/g' | tee skata.sh  > /dev/null 2>&1
 
 set +x
-cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library:" > app/config/parameters.yml
+cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library_manager:" > app/config/parameters.yml
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
-
-echo "    library: '$LIBRARY_URL'" >> app/config/parameters.yml
+echo "    library_manager: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 
 
