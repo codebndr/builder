@@ -36,10 +36,10 @@ mkdir -p `pwd`/Symfony/app/logs/
 cd Symfony
 
 set +x
-cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library:" > app/config/parameters.yml
+cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library_manager:" > app/config/parameters.yml
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
 
-echo "    library: '$LIBRARY_URL'" >> app/config/parameters.yml
+echo "    library_manager: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 
 
