@@ -1,28 +1,23 @@
 language: php
 php:
-#  - 5.5
-#  - 5.4
-  - 5.3
-
-#before_install:
-#  - sudo apt-get update
+  - 5.5.9
 
 env:
   global:
     # eratosthenes library management system url (encrypted)
     - secure: "ZYn4o229W7hq1uzj/Tii9h/a3iJlr9Li4TBaTNFXm6JY2H49lA57L1DIFUaTleTUx2Ibs2+kUrV3NFQ9Mo/ThO67gV5Q1XEMjxgFzAKt4AuWJ5TNbHxs3GBTjYc+129QCKSd0WdzrRDqEC2nZ9GjI+j7lS39DrjAMGg4wEp9b0U="
     # codebender compiler url (encrypted)
-    - secure: "XRsqGDqdu5uhdj2lF4SZ6qv6Y0PdcRPcvE13XvVGnIYRZaITelP3eJNSvLPO+Q5k4mBmKCz8t+ws/OVRRwSAXYaKe0Z8ZXgEcNyo1nEwGekC35mTuG1FFfB/pbuBp5/OWjw6bgz2tEHhKuFIbHytpT9zJQYy+D07rzOYeUsZjOY="
+    - secure: "hzL7akuLe+HCsi6G7Z1UliNR8ekzGlWv1cS/iweeXnxjISYU5ALrvpeOHNcfiC/xTZJsJXq+KYwZpVa/Ps7AVwfLgnUkQGD8OA7AmXbqgIv/xao24u4NNd+xAEB9LSr/eWexQhRJniE+JHgZ53yrAefJBIwmeD0YhvU1IdrzMdE="
 
 before_script:
-  - sudo chmod +x scripts/install.sh
-  - scripts/install.sh
+  - sudo chmod +x scripts/travis_install.sh
+  - scripts/travis_install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
-  - echo 'error_reporting =  E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'error_reporting =  E_ALL' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - cd /opt/codebender/builder
-  - sudo chmod +x scripts/apache_install.sh
-  - scripts/apache_install.sh
+  - sudo chmod +x scripts/travis_apache_install.sh
+  - scripts/travis_apache_install.sh
   - cd /opt/codebender/builder/Symfony
 
 script:
@@ -37,6 +32,3 @@ after_script:
 
 notifications:
   irc: "chat.freenode.net#codebender.cc"
-#  email:
-#    recipients:
-#      - girder@codebender.cc

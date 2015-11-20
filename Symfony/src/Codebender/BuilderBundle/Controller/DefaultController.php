@@ -36,26 +36,26 @@ class DefaultController extends Controller
     public function handleRequestAction($authKey, $version)
     {
         if ($authKey !== $this->container->getParameter('authorizationKey')) {
-            return new Response(json_encode(array("success" => false, "message" => "Invalid authorization key.")));
+            return new Response(json_encode(["success" => false, "message" => "Invalid authorization key."]));
         }
 
         if ($version !== $this->container->getParameter('version')) {
-            return new Response(json_encode(array("success" => false, "message" => "Invalid api version.")));
+            return new Response(json_encode(["success" => false, "message" => "Invalid api version."]));
         }
 
         $request = $this->getRequest()->getContent();
         if (empty($request)) {
-            return new Response(json_encode(array("success" => false, "message" => "Invalid input.")));
+            return new Response(json_encode(["success" => false, "message" => "Invalid input."]));
         }
 
         $contents = json_decode($request, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return new Response(json_encode(array("success" => false, "message" => "Wrong data.")));
+            return new Response(json_encode(["success" => false, "message" => "Wrong data."]));
         }
 
         if (!array_key_exists("data", $contents)) {
-            return new Response(json_encode(array("success" => false, "message" => "Insufficient data provided.")));
+            return new Response(json_encode(["success" => false, "message" => "Insufficient data provided."]));
         }
 
         if ($contents["type"] == "compiler") {
@@ -66,7 +66,13 @@ class DefaultController extends Controller
             return new Response($this->getLibraryInfo(json_encode($contents["data"])));
         }
 
-        return new Response(json_encode(array("success" => false, "message" => "Invalid request type (can handle only 'compiler' or 'library' requests)")));
+        return new Response(
+            json_encode(
+                [
+                    "success" => false,
+                    "message" => "Invalid request type (can handle only 'compiler' or 'library' requests)"
+                ]
+            ));
     }
 
     /**
@@ -81,11 +87,11 @@ class DefaultController extends Controller
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
+        $contents = $this->addUserIdProjectIdIfNotInRequest($contents);
+
         $files = $contents["files"];
 
-        $this->checkForUserIdProjectId($files);
-
-        $userLibraries = array();
+        $userLibraries = [];
 
         if (array_key_exists('libraries', $contents)) {
             $userLibraries = $contents['libraries'];
@@ -102,7 +108,7 @@ class DefaultController extends Controller
 
         $decodedResponse = json_decode($data, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return json_encode(array("success" => false, "message"=> "Failed to get compiler response."));
+            return json_encode(["success" => false, "message"=> "Failed to get compiler response."]);
         }
 
         if ($decodedResponse["success"] === false && !array_key_exists("step", $decodedResponse)) {
@@ -146,15 +152,16 @@ class DefaultController extends Controller
         $detectedHeaders = $apiHandler->readLibraries($projectFiles);
 
         // declare arrays
-        $notFoundHeaders = array();
-        $foundHeaders = array();
-        $librariesFromLibman = array();
+        $notFoundHeaders = [];
+        $foundHeaders = [];
+        $librariesFromLibman = [];
         $providedLibraries = array_keys($userLibraries);
         $libraries = $userLibraries;
 
         foreach ($detectedHeaders as $header) {
 
             $existsInRequest = false;
+            // TODO We can do this in a better way
             foreach ($userLibraries as $library) {
                 foreach ($library as $libraryContent) {
                     if ($libraryContent["filename"] == $header.".h") {
@@ -167,7 +174,7 @@ class DefaultController extends Controller
             if ($existsInRequest === true) {
                 continue;
             }
-            $requestContent = array("type" => "fetch", "library" => $header);
+            $requestContent = ["type" => "fetch", "library" => $header];
             $data = $this->getLibraryInfo(json_encode($requestContent));
             $data = json_decode($data, true);
 
@@ -178,7 +185,7 @@ class DefaultController extends Controller
 
             $foundHeaders[] = $header . ".h";
             $librariesFromLibman[] = $header;
-            $filesToBeAdded = array();
+            $filesToBeAdded = [];
             foreach ($data["files"] as $file) {
                 if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'c', 'S', 'inc')))
                     $filesToBeAdded[] = $file;
@@ -186,41 +193,27 @@ class DefaultController extends Controller
             $libraries[$header] = $filesToBeAdded;
         }
 
-        return array(
+        return [
             'libraries' => $libraries,
             'providedLibraries' => $providedLibraries,
             'fetchedLibraries' => $librariesFromLibman,
             'detectedHeaders'=> $detectedHeaders,
             'foundHeaders' => $foundHeaders,
-            'notFoundHeaders' => $notFoundHeaders);
+            'notFoundHeaders' => $notFoundHeaders
+        ];
     }
 
     /**
-      * Checks if project id and user id txt files exist in the request files.
-      * If not, creates these files with null id
+      * Checks if project id and user id exist in the request.
+      * If not, adds the fields with null id
       *
-      * @param array $projectFiles
+      * @param array $requestContents
+      * @return array
       */
-    protected function checkForUserIdProjectId(&$projectFiles)
+    protected function addUserIdProjectIdIfNotInRequest($requestContents)
     {
-        $foundProject = false;
-        $foundUser = false;
-
-        foreach ($projectFiles as $file) {
-            if (preg_match('/(?<=user_)[\d]+/', $file['filename'])) {
-                $foundUser = true;
-            }
-            if (preg_match('/(?<=project_)[\d]+/', $file['filename'])) {
-                $foundProject = true;
-            }
-        }
-
-        if (!$foundUser) {
-            $projectFiles[] = array('filename' => 'user_null.txt', 'content' => '');
-        }
-        if (!$foundProject) {
-            $projectFiles[] = array('filename' => 'project_null.txt', 'content' => '');
-        }
+        $nullDefaults = ['userId' => 'null', 'projectId' => 'null'];
+        return array_merge($nullDefaults, (array)$requestContents);
     }
 }
 

@@ -53,7 +53,7 @@ class DefaultHandler
         $arrowsRegex = "/^\s*#\s*include\s*<\s*([a-zA-Z0-9_+]*)\.h\s*>/";
         $quotesRegex = "/^\s*#\s*include\s*\"\s*([a-zA-Z0-9_+]*)\.h\s*\"/";
 
-        $headers = array("arrows" => array(), "quotes" => array());
+        $headers = ["arrows" => [], "quotes" => []];
         foreach (explode("\n", $code) as $line)
         {
           if (preg_match($arrowsRegex, $line, $matches))
@@ -78,7 +78,7 @@ class DefaultHandler
      */
     function readLibraries($sketchFiles) {
         // Scan files for headers and locate the corresponding include paths.
-        $headers = array("arrows" => array(), "quotes" => array());
+        $headers = ["arrows" => [], "quotes" => []];
 
         foreach ($sketchFiles as $file)
         {

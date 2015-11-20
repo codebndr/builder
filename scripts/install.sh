@@ -4,26 +4,25 @@ set -e
 
 PACKAGENAME=builder
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	echo "Configuring environment for Linux"
-	# Make sure we have up-to-date stuff
-    sudo apt-get update
-	if [[ ! $TRAVIS ]]; then
-		# Ubuntu Server (on AWS?) lacks UTF-8 for some reason. Give it that
-		sudo locale-gen en_US.UTF-8
-		sudo apt-get install -y php5-intl
-	fi
-	# Install dependencies
-	sudo apt-get install -y apache2 libapache2-mod-php5 php-pear php5-curl php5-sqlite php5-mysql acl curl git
-	# Enable Apache configs
-	sudo a2enmod rewrite
-    sudo a2enmod alias
-    # Restart Apache
-    sudo service apache2 restart
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-	# is there something comparable to this on os x? perhaps Homebrew
-	echo "Configuring environment for OS X"
+if [[ "$OSTYPE" != "linux-gnu" ]]; then
+    echo "Only Linux environment is supported"
 fi
+echo "Configuring environment for Linux"
+# Make sure we have up-to-date stuff
+sudo apt-get update
+if [[ ! $TRAVIS ]]; then
+    # Ubuntu Server (on AWS?) lacks UTF-8 for some reason. Give it that
+    sudo locale-gen en_US.UTF-8
+    sudo apt-get install -y php5-intl
+fi
+# Install dependencies
+sudo apt-get install -y apache2 libapache2-mod-php5 php-pear php5-curl php5-sqlite php5-mysql acl curl git
+# Enable Apache configs
+sudo a2enmod rewrite
+sudo a2enmod alias
+# Restart Apache
+sudo service apache2 restart
+
 
 if [[ ! $TRAVIS ]]; then
 
@@ -47,38 +46,14 @@ cd /opt/codebender/$PACKAGENAME
 rm -rf Symfony/app/cache/*
 rm -rf Symfony/app/logs/*
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [[ ! $TRAVIS ]]; then
+    # Need to create cache and logs directories, as they do not pre-exist in new deployments
+    mkdir -p `pwd`/Symfony/app/cache/
+    mkdir -p `pwd`/Symfony/app/logs/
 
-	if [[ ! $TRAVIS ]]; then
-
-		sudo dd if=/dev/zero of=cache-fs bs=1024 count=0 seek=200000
-		sudo dd if=/dev/zero of=logs-fs bs=1024 count=0 seek=200000
-
-		yes | sudo mkfs.ext4 cache-fs
-		yes | sudo mkfs.ext4 logs-fs
-
-		mkdir -p `pwd`/Symfony/app/cache/
-		mkdir -p `pwd`/Symfony/app/logs/
-
-		echo "`pwd`/cache-fs `pwd`/Symfony/app/cache/ ext4 loop,acl 0 0" | sudo tee -a /etc/fstab > /dev/null 2>&1
-		echo "`pwd`/logs-fs `pwd`/Symfony/app/logs/ ext4 loop,acl 0 0" | sudo tee -a /etc/fstab > /dev/null 2>&1
-		cat /etc/fstab
-
-		sudo mount `pwd`/Symfony/app/cache/
-		sudo mount `pwd`/Symfony/app/logs/
-
-		sudo rm -rf `pwd`/Symfony/app/cache/*
-		sudo rm -rf `pwd`/Symfony/app/logs/*
-
-		sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
-		sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
-	fi
-
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-
-	HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
-	sudo chmod +a "$HTTPDUSER allow delete,write,append,file_inherit,directory_inherit" Symfony/app/cache Symfony/app/logs
-	sudo chmod +a "`whoami` allow delete,write,append,file_inherit,directory_inherit" Symfony/app/cache Symfony/app/logs
+    # Set access control for both apache and current user on cache and logs directories
+    sudo setfacl -R -m u:www-data:rwX -m u:`whoami`:rwX `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
+    sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx `pwd`/Symfony/app/cache `pwd`/Symfony/app/logs
 fi
 
 cd Symfony
@@ -87,13 +62,9 @@ cd Symfony
 ## For reference, here's a command to replace a substring in a file
 ## cat kourades.sh  | sed 's/kourades/skata/g' | tee skata.sh  > /dev/null 2>&1
 
-cp app/config/parameters.yml.dist app/config/parameters.yml
-
 set +x
-cat app/config/parameters.yml | grep -v "compiler:" | tee app/config/parameters.yml > /dev/null
+cat app/config/parameters.yml.dist | grep -iv "compiler:" | grep -iv "library_manager:" > app/config/parameters.yml
 echo "    compiler: '$COMPILER_URL'" >> app/config/parameters.yml
-
-cat app/config/parameters.yml | grep -v "library_manager:" | tee app/config/parameters.yml > /dev/null
 echo "    library_manager: '$LIBRARY_URL'" >> app/config/parameters.yml
 set -x
 

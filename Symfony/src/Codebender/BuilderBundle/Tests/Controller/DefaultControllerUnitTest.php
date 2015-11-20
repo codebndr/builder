@@ -18,7 +18,8 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->once())->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
+        $container->expects($this->once())->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
 
         $actionResponse = $controller->handleRequestAction('invalidAuthKey', 'v1');
 
@@ -29,8 +30,10 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v2'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willReturn('v2');
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -41,11 +44,15 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willreturn('v1');
 
-        $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $request->expects($this->once())->method('getContent')->will($this->returnValue(''));
+        $controller->expects($this->once())->method('getRequest')
+            ->willReturn($request);
+        $request->expects($this->once())->method('getContent')
+            ->willReturn('');
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -56,11 +63,15 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willReturn('v1');
 
-        $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $request->expects($this->once())->method('getContent')->will($this->returnValue("notJson"));
+        $controller->expects($this->once())->method('getRequest')
+            ->willReturn($request);
+        $request->expects($this->once())->method('getContent')
+            ->willReturn("notJson");
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -71,11 +82,15 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpController($controller, $container, $request, $apiHandler);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willReturn('v1');
 
-        $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $request->expects($this->once())->method('getContent')->will($this->returnValue('{"type":"compiler"}'));
+        $controller->expects($this->once())->method('getRequest')
+            ->willReturn($request);
+        $request->expects($this->once())->method('getContent')
+            ->willReturn('{"type":"compiler"}');
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -88,18 +103,23 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('getRequest', 'compile', 'getLibraryInfo'))
+            ->setMethods(['getRequest', 'compile', 'getLibraryInfo'])
             ->getMock();
 
         $controller->setContainer($container);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willReturn('v1');
 
-        $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $request->expects($this->once())->method('getContent')->will($this->returnValue('{"type":"compiler","data":[]}'));
+        $controller->expects($this->once())->method('getRequest')
+            ->willReturn($request);
+        $request->expects($this->once())->method('getContent')
+            ->willReturn('{"type":"compiler","data":[]}');
 
-        $controller->expects($this->once())->method('compile')->with(array())->will($this->returnValue('someValue'));
+        $controller->expects($this->once())->method('compile')->with([])
+            ->willReturn('someValue');
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -112,16 +132,20 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('getRequest', 'compile', 'getLibraryInfo'))
+            ->setMethods(['getRequest', 'compile', 'getLibraryInfo'])
             ->getMock();
 
         $controller->setContainer($container);
 
-        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')->will($this->returnValue('anAuthKey'));
-        $container->expects($this->at(1))->method('getParameter')->with('version')->will($this->returnValue('v1'));
+        $container->expects($this->at(0))->method('getParameter')->with('authorizationKey')
+            ->willReturn('anAuthKey');
+        $container->expects($this->at(1))->method('getParameter')->with('version')
+            ->willReturn('v1');
 
-        $controller->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $request->expects($this->once())->method('getContent')->will($this->returnValue('{"type":"invalidType","data":[]}'));
+        $controller->expects($this->once())->method('getRequest')
+            ->willReturn($request);
+        $request->expects($this->once())->method('getContent')
+            ->willReturn('{"type":"invalidType","data":[]}');
 
         $actionResponse = $controller->handleRequestAction('anAuthKey', 'v1');
 
@@ -134,7 +158,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'))
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -144,14 +168,19 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('compile');
 
-        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(array());
-        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with(array())->will($this->returnValue(array('libraries' => array())));
+        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
+            ->willReturn(['files' => []]);
+        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
+            ->willReturn(['libraries' => []]);
 
-        $container->expects($this->once())->method('getParameter')->with('compiler')->will($this->returnValue('http://compiler/url'));
-        $apiHandler->expects($this->once())->method('postRawData')->with('http://compiler/url', '{"files":[],"libraries":[]}')->will($this->returnValue('nonJson'));
+        $container->expects($this->once())->method('getParameter')->with('compiler')
+            ->willReturn('http://compiler/url');
+        $apiHandler->expects($this->once())->method('postRawData')
+            ->with('http://compiler/url', '{"files":[],"libraries":[]}')->willReturn('nonJson');
 
-        $functionResponse = $function->invoke($controller, array('files' => array()));
+        $functionResponse = $function->invoke($controller, ['files' => []]);
 
         $this->assertContains('Failed to get compiler response', $functionResponse);
     }
@@ -162,7 +191,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'))
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -172,18 +201,25 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('compile');
 
-        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(array());
-        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with(array())->will($this->returnValue(array('libraries' => array())));
+        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')->with(['files' => []])
+            ->willReturn(['files' => []]);
+        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([])
+            ->willReturn(['libraries' => []]);
 
-        $container->expects($this->once())->method('getParameter')->with('compiler')->will($this->returnValue('http://compiler/url'));
+        $container->expects($this->once())->method('getParameter')->with('compiler')
+            ->willReturn('http://compiler/url');
         $apiHandler->expects($this->once())->method('postRawData')
             ->with('http://compiler/url', '{"files":[],"libraries":[]}')
-            ->will($this->returnValue('{"success":false,"message":"someError"}'));
+            ->willReturn('{"success":false,"message":"someError"}');
 
-        $functionResponse = $function->invoke($controller, array('files' => array()));
+        $functionResponse = $function->invoke($controller, ['files' => []]);
 
-        $this->assertEquals('{"success":false,"message":"someError","step":"unknown","additionalCode":[]}', $functionResponse);
+        $this->assertEquals(
+            '{"success":false,"message":"someError","step":"unknown","additionalCode":[]}',
+            $functionResponse
+        );
     }
 
     public function testCompileFalseCompilationWithStepIncluded() {
@@ -192,7 +228,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'checkForUserIdProjectId', 'returnProvidedAndFetchedLibraries'))
+            ->setMethods(['get', 'getRequest', 'addUserIdProjectIdIfNotInRequest', 'returnProvidedAndFetchedLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -202,16 +238,21 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('compile');
 
-        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
-        $controller->expects($this->at(1))->method('checkForUserIdProjectId')->with(array());
-        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with(array())->will($this->returnValue(array('libraries' => array())));
+        $controller->expects($this->at(0))->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
+        $controller->expects($this->at(1))->method('addUserIdProjectIdIfNotInRequest')
+            ->with(['files' => [], 'libraries' => []])
+            ->willReturn(['files' => [], 'libraries' => []]);
+        $controller->expects($this->at(2))->method('returnProvidedAndFetchedLibraries')->with([], [])
+            ->willReturn(['libraries' => []]);
 
-        $container->expects($this->once())->method('getParameter')->with('compiler')->will($this->returnValue('http://compiler/url'));
+        $container->expects($this->once())->method('getParameter')->with('compiler')
+            ->willReturn('http://compiler/url');
         $apiHandler->expects($this->once())->method('postRawData')
             ->with('http://compiler/url', '{"files":[],"libraries":[]}')
-            ->will($this->returnValue('{"success":false,"message":"someError","step":5}'));
+            ->willReturn('{"success":false,"message":"someError","step":5}');
 
-        $functionResponse = $function->invoke($controller, array('files' => array()));
+        $functionResponse = $function->invoke($controller, ['files' => [], 'libraries' => []]);
 
         $this->assertEquals('{"success":false,"message":"someError","step":5,"additionalCode":[]}', $functionResponse);
     }
@@ -225,7 +266,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest'))
+            ->setMethods(['get', 'getRequest'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -235,11 +276,15 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('getLibraryInfo');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
+        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
 
-        $container->expects($this->once())->method('getParameter')->with('library_manager')->will($this->returnValue('http://library/manager'));
+        $container->expects($this->once())->method('getParameter')->with('library_manager')
+            ->will($this->returnValue('http://library/manager'));
 
-        $apiHandler->expects($this->once())->method('postRawData')->with('http://library/manager', 'library data')->will($this->returnValue('Whatever'));
+        $apiHandler->expects($this->once())->method('postRawData')
+            ->with('http://library/manager', 'library data')
+            ->willReturn('Whatever');
 
         $functionResponse = $function->invoke($controller, 'library data');
 
@@ -252,7 +297,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest'))
+            ->setMethods(['get', 'getRequest'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -262,11 +307,13 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('returnProvidedAndFetchedLibraries');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
+        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
 
-        $apiHandler->expects($this->once())->method('readLibraries')->with(array())->will($this->returnValue(array()));
+        $apiHandler->expects($this->once())->method('readLibraries')->with([])
+            ->willReturn(array());
 
-        $functionResponse = $function->invokeArgs($controller, array(array(), array()));
+        $functionResponse = $function->invokeArgs($controller, [[], []]);
 
         $this->assertArrayHasKey('libraries', $functionResponse);
         $this->assertEmpty($functionResponse['libraries']);
@@ -288,7 +335,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'getLibraryInfo'))
+            ->setMethods(['get', 'getRequest', 'getLibraryInfo'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -298,18 +345,20 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('returnProvidedAndFetchedLibraries');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
+        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
 
-        $apiHandler->expects($this->once())->method('readLibraries')->with(array())->will($this->returnValue(array('header')));
+        $apiHandler->expects($this->once())->method('readLibraries')->with([])
+            ->willReturn(['header']);
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->will($this->returnValue(json_encode(array('success' => true, 'files' => array(array('filename' => 'header.h', 'content' => ''))))));
+            ->willReturn(json_encode(['success' => true, 'files' => [['filename' => 'header.h', 'content' => '']]]));
 
-        $functionResponse = $function->invokeArgs($controller, array(array(), array()));
-        $this->assertEquals(array('header' => array(array('filename' => 'header.h', 'content' => ''))), $functionResponse['libraries']);
-        $this->assertEquals(array('header'), $functionResponse['fetchedLibraries']);
-        $this->assertEquals(array('header.h'), $functionResponse['foundHeaders']);
+        $functionResponse = $function->invokeArgs($controller, [[], []]);
+        $this->assertEquals(['header' => [['filename' => 'header.h', 'content' => '']]], $functionResponse['libraries']);
+        $this->assertEquals(['header'], $functionResponse['fetchedLibraries']);
+        $this->assertEquals(['header.h'], $functionResponse['foundHeaders']);
     }
 
     public function testReturnProvidedAndFetchedLibrariesNoProvidedRequestedFromLibmanNotFound() {
@@ -318,7 +367,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'getLibraryInfo'))
+            ->setMethods(['get', 'getRequest', 'getLibraryInfo'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -328,18 +377,20 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('returnProvidedAndFetchedLibraries');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
+        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
 
-        $apiHandler->expects($this->once())->method('readLibraries')->with(array())->will($this->returnValue(array('header')));
+        $apiHandler->expects($this->once())->method('readLibraries')->with([])
+            ->willReturn(['header']);
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->will($this->returnValue(json_encode(array('success' => false))));
+            ->willReturn(json_encode(['success' => false]));
 
-        $functionResponse = $function->invokeArgs($controller, array(array(), array()));
-        $this->assertEquals(array(), $functionResponse['libraries']);
-        $this->assertEquals(array(), $functionResponse['fetchedLibraries']);
-        $this->assertEquals(array('header.h'), $functionResponse['notFoundHeaders']);
+        $functionResponse = $function->invokeArgs($controller, [[], []]);
+        $this->assertEquals([], $functionResponse['libraries']);
+        $this->assertEquals([], $functionResponse['fetchedLibraries']);
+        $this->assertEquals(['header.h'], $functionResponse['notFoundHeaders']);
     }
 
     public function testReturnProvidedAndFetchedLibrariesWithProvidedLibrary() {
@@ -348,7 +399,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         // Override previous controller mock. More class member functions need to get mocked.
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest', 'getLibraryInfo'))
+            ->setMethods(['get', 'getRequest', 'getLibraryInfo'])
             ->getMock();
 
         $controller->setContainer($container);
@@ -358,24 +409,25 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('returnProvidedAndFetchedLibraries');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')->will($this->returnValue($apiHandler));
+        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
 
-        $apiHandler->expects($this->once())->method('readLibraries')->with(array())->will($this->returnValue(array('header')));
+        $apiHandler->expects($this->once())->method('readLibraries')->with([])->willReturn(['header']);
 
         $functionResponse = $function->invokeArgs(
             $controller,
-            array(
-                array(),
-                array('personal_library' => array(array('filename' => 'header.h', 'content' => '')))
-            )
+            [
+                [],
+                ['personal_library' => [['filename' => 'header.h', 'content' => '']]]
+            ]
         );
 
         $controller->expects($this->never())->method('getLibraryInfo');
 
-        $this->assertEquals(array('personal_library' => array(array('filename' => 'header.h', 'content' => ''))),
+        $this->assertEquals(['personal_library' => [['filename' => 'header.h', 'content' => '']]],
             $functionResponse['libraries']);
-        $this->assertEquals(array('personal_library'), $functionResponse['providedLibraries']);
-        $this->assertEquals(array('header.h'), $functionResponse['foundHeaders']);
+        $this->assertEquals(['personal_library'], $functionResponse['providedLibraries']);
+        $this->assertEquals(['header.h'], $functionResponse['foundHeaders']);
     }
 
     public function testcheckUserIdProjectIdHasNone() {
@@ -384,20 +436,14 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
-        $projectFiles = array(array('filename' => 'project.ino', 'content' =>''));
+        $requestContent = ['files' => [['filename' => 'project.ino', 'content' =>'']]];
 
-        /*
-         * The function accepts a reference of the parameter
-         * TODO: Find a way to replace the Reflection call-time pass-by-reference (removed in PHP 5.4)
-         */
-        $functionResponse = $function->invoke($controller, &$projectFiles);
+        $functionResponse = $function->invoke($controller, $requestContent);
 
-        $this->assertEquals(3, count($projectFiles));
-        foreach ($projectFiles as $file) {
-            $this->assertTrue(in_array($file['filename'], array('project.ino', 'project_null.txt', 'user_null.txt')));
-        }
+        $this->assertEquals('null', $functionResponse['projectId']);
+        $this->assertEquals('null', $functionResponse['userId']);
     }
 
     public function testcheckUserIdProjectIdHasOnlyUserId() {
@@ -406,20 +452,14 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
-        $projectFiles = array(array('filename' => 'project.ino', 'content' =>''), array('filename' => 'user_1.txt', 'content' => ''));
+        $requestContent = ['userId' => 1, 'files' => [['filename' => 'project.ino', 'content' =>'']]];
 
-        /*
-         * The function accepts a reference of the parameter
-         * TODO: Find a way to replace the Reflection call-time pass-by-reference (removed in PHP 5.4)
-         */
-        $functionResponse = $function->invoke($controller, &$projectFiles);
+        $functionResponse = $function->invoke($controller, $requestContent);
 
-        $this->assertEquals(3, count($projectFiles));
-        foreach ($projectFiles as $file) {
-            $this->assertTrue(in_array($file['filename'], array('project.ino', 'project_null.txt', 'user_1.txt')));
-        }
+        $this->assertEquals('null', $functionResponse['projectId']);
+        $this->assertEquals(1, $functionResponse['userId']);
     }
 
     public function testcheckUserIdProjectIdHasOnlyProjectId() {
@@ -428,20 +468,14 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         /*
          * Use ReflectionMethod class to make compile protected function accessible from current context
          */
-        $function = $this->getMethod('checkForUserIdProjectId');
+        $function = $this->getMethod('addUserIdProjectIdIfNotInRequest');
 
-        $projectFiles = array(array('filename' => 'project.ino', 'content' =>''), array('filename' => 'project_1.txt', 'content' => ''));
+        $projectFiles = ['projectId' => 1, 'files' => [['filename' => 'project.ino', 'content' =>'']]];
 
-        /*
-         * The function accepts a reference of the parameter
-         * TODO: Find a way to replace the Reflection call-time pass-by-reference (removed in PHP 5.4)
-         */
-        $functionResponse = $function->invoke($controller, &$projectFiles);
+        $functionResponse = $function->invoke($controller, $projectFiles);
 
-        $this->assertEquals(3, count($projectFiles));
-        foreach ($projectFiles as $file) {
-            $this->assertTrue(in_array($file['filename'], array('project.ino', 'project_1.txt', 'user_null.txt')));
-        }
+        $this->assertEquals(1, $functionResponse['projectId']);
+        $this->assertEquals('null', $functionResponse['userId']);
     }
 
     protected static function getMethod($name) {
@@ -453,22 +487,22 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
     private function setUpController(&$controller, &$container, &$request, &$apiHandler) {
         $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'getRequest'))
+            ->setMethods(['get', 'getRequest'])
             ->getMock();
 
         $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')
             ->disableOriginalConstructor()
-            ->setMethods(array('getParameter'))
+            ->setMethods(['getParameter'])
             ->getMockForAbstractClass();
 
         $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
             ->disableOriginalConstructor()
-            ->setMethods(array('getContent'))
+            ->setMethods(['getContent'])
             ->getMock();
 
         $apiHandler = $this->getMockBuilder('Codebender\BuilderBundle\Handler\DefaultHandler')
             ->disableOriginalConstructor()
-            ->setMethods(array('postRawData', 'readLibraries'))
+            ->setMethods(['postRawData', 'readLibraries'])
             ->getMock();
 
         $controller->setContainer($container);
