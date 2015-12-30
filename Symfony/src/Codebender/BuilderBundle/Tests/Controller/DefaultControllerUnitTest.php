@@ -387,7 +387,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->willReturn(json_encode(['success' => true, 'files' => [['filename' => 'header.h', 'content' => '']]]));
+            ->willReturn(['success' => true, 'files' => [['filename' => 'header.h', 'content' => '']]]);
 
         $functionResponse = $function->invokeArgs($controller, [[], []]);
         $this->assertEquals(['header' => [['filename' => 'header.h', 'content' => '']]], $functionResponse['libraries']);
@@ -419,7 +419,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->willReturn(json_encode(['success' => false]));
+            ->willReturn(['success' => false]);
 
         $functionResponse = $function->invokeArgs($controller, [[], []]);
         $this->assertEquals([], $functionResponse['libraries']);

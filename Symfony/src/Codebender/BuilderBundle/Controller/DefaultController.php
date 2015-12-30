@@ -179,7 +179,6 @@ class DefaultController extends Controller
             }
             $requestContent = ["type" => "fetch", "library" => $header];
             $data = $this->getLibraryInfo(json_encode($requestContent));
-            $data = json_decode($data, true);
 
             if ($data['success'] === false) {
                 $notFoundHeaders[] = $header . ".h";
