@@ -7,7 +7,7 @@ env:
     # eratosthenes library management system url (encrypted) --> LIBRARY_URL
     - secure: "DX1KR4VH1AwthSZ/6me6y8EB/xCf7kH+hXyacOiIwHmxPe7xR/+v7nht1Dlspco0nonv7hlF8yCilF2f3cIMHQlmyg9s1kuVZ4QtC8O9+ZkVQ6fDhhH7HKYNUKjhKO7eT5a+RD7YCXQYQSfDfJ35cWeK3vAast3zWK2pnmdKXhc="
     # codebender compiler url (encrypted) --> COMPILER_URL
-    - secure: "QUYKE9qjXxeCWZPl+CQpIvj3J9Bz9aVu9jo1m+EDjaQ3gXwQ+kXTyZ68eDeLLCFq8s5IEcsNdE6X7wyBh+eu6rzEU5EwvGMqPdIpXxnhkzTbb8d2KRCScwkglrB/Dbh1Ovhq0+CdaSkLSQBQvOuxkqgGNf1Oophws6eG4iCIZKQ="’’
+    - secure: "QUYKE9qjXxeCWZPl+CQpIvj3J9Bz9aVu9jo1m+EDjaQ3gXwQ+kXTyZ68eDeLLCFq8s5IEcsNdE6X7wyBh+eu6rzEU5EwvGMqPdIpXxnhkzTbb8d2KRCScwkglrB/Dbh1Ovhq0+CdaSkLSQBQvOuxkqgGNf1Oophws6eG4iCIZKQ="
 
 before_script:
   - sudo chmod +x scripts/travis_install.sh
