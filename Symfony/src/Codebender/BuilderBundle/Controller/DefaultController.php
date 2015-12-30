@@ -3,8 +3,8 @@
 namespace Codebender\BuilderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * default controller of api bundle
@@ -14,12 +14,12 @@ class DefaultController extends Controller
     /**
      * status action
      *
-     * @return Response Response instance.
+     * @return JsonResponse
      *
      */
     public function statusAction()
     {
-        return new Response(json_encode(array("success" => true, "status" => "OK")));
+        return new JsonResponse(['success' => true, 'status' => 'OK']);
     }
 
     /**
@@ -31,55 +31,52 @@ class DefaultController extends Controller
      *
      * @param $authKey
      * @param $version
-     * @return Response
+     * @return JsonResponse
      */
     public function handleRequestAction($authKey, $version)
     {
         if ($authKey !== $this->container->getParameter('authorizationKey')) {
-            return new Response(json_encode(["success" => false, "message" => "Invalid authorization key."]));
+            return new JsonResponse(['success' => false, 'message' => 'Invalid authorization key.']);
         }
 
         if ($version !== $this->container->getParameter('version')) {
-            return new Response(json_encode(["success" => false, "message" => "Invalid api version."]));
+            return new JsonResponse(['success' => false, 'message' => 'Invalid api version.']);
         }
 
         $request = $this->getRequest()->getContent();
         if (empty($request)) {
-            return new Response(json_encode(["success" => false, "message" => "Invalid input."]));
+            return new JsonResponse(['success' => false, 'message' => 'Invalid input.']);
         }
 
         $contents = json_decode($request, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return new Response(json_encode(["success" => false, "message" => "Wrong data."]));
+            return new JsonResponse(['success' => false, 'message' => 'Wrong data.']);
         }
 
-        if (!array_key_exists("data", $contents)) {
-            return new Response(json_encode(["success" => false, "message" => "Insufficient data provided."]));
+        if (!array_key_exists('data', $contents)) {
+            return new JsonResponse(['success' => false, 'message' => 'Insufficient data provided.']);
         }
 
-        if ($contents["type"] == "compiler") {
-            return new Response($this->compile($contents["data"]));
+        if ($contents['type'] == 'compiler') {
+            return new JsonResponse($this->compile($contents['data']));
         }
 
-        if ($contents["type"] == "library") {
-            return new Response($this->getLibraryInfo(json_encode($contents["data"])));
+        if ($contents['type'] == 'library') {
+            return new JsonResponse($this->getLibraryInfo(json_encode($contents['data'])));
         }
 
-        return new Response(
-            json_encode(
-                [
-                    "success" => false,
-                    "message" => "Invalid request type (can handle only 'compiler' or 'library' requests)"
-                ]
-            ));
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Invalid request type (can handle only \'compiler\' or \'library\' requests)'
+        ]);
     }
 
     /**
      * Gets the data from the handleRequestAction and proceeds with the compilation
      *
      * @param $contents
-     * @return Response
+     * @return array
      *
      * @SuppressWarnings(PHPMD.LongVariable)
      */
@@ -89,7 +86,7 @@ class DefaultController extends Controller
 
         $contents = $this->addUserIdProjectIdIfNotInRequest($contents);
 
-        $files = $contents["files"];
+        $files = $contents['files'];
 
         $userLibraries = [];
 
@@ -99,7 +96,7 @@ class DefaultController extends Controller
 
         $userAndLibmanLibraries = $this->returnProvidedAndFetchedLibraries($files, $userLibraries);
 
-        $contents["libraries"] = $userAndLibmanLibraries['libraries'];
+        $contents['libraries'] = $userAndLibmanLibraries['libraries'];
 
         $compilerRequestContent = json_encode($contents);
 
@@ -108,17 +105,17 @@ class DefaultController extends Controller
 
         $decodedResponse = json_decode($data, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return json_encode(["success" => false, "message"=> "Failed to get compiler response."]);
+            return ['success' => false, 'message' => 'Failed to get compiler response.'];
         }
 
-        if ($decodedResponse["success"] === false && !array_key_exists("step", $decodedResponse)) {
-            $decodedResponse["step"] = "unknown";
+        if ($decodedResponse['success'] === false && !array_key_exists('step', $decodedResponse)) {
+            $decodedResponse['step'] = 'unknown';
         }
 
         unset($userAndLibmanLibraries['libraries']);
         $decodedResponse['additionalCode'] = $userAndLibmanLibraries;
 
-        return json_encode($decodedResponse);
+        return $decodedResponse;
     }
 
     /**
@@ -127,7 +124,7 @@ class DefaultController extends Controller
      * The data must be already json encoded before passing them to this function.
      *
      * @param $data
-     * @return mixed
+     * @return array
      */
     protected function getLibraryInfo($data)
     {
@@ -135,7 +132,13 @@ class DefaultController extends Controller
 
         $libraryManager = $this->container->getParameter('library_manager');
 
-        return $handler->postRawData($libraryManager, $data);
+        $response = json_decode($handler->postRawData($libraryManager, $data), true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return ['success' => false, 'message' => 'Cannot fetch library data'];
+        }
+
+        return $response;
     }
 
     /**
