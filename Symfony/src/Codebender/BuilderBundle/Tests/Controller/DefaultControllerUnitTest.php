@@ -182,7 +182,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $functionResponse = $function->invoke($controller, ['files' => []]);
 
-        $this->assertContains('Failed to get compiler response', $functionResponse);
+        $this->assertContains('Failed to get compiler response', $functionResponse['message']);
     }
 
     public function testCompileFalseCompilationWithoutStepIncluded() {
@@ -217,7 +217,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
         $functionResponse = $function->invoke($controller, ['files' => []]);
 
         $this->assertEquals(
-            '{"success":false,"message":"someError","step":"unknown","additionalCode":[]}',
+            ['success' => false, 'message' => 'someError', 'step' => 'unknown', 'additionalCode' => []],
             $functionResponse
         );
     }
@@ -254,13 +254,13 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $functionResponse = $function->invoke($controller, ['files' => [], 'libraries' => []]);
 
-        $this->assertEquals('{"success":false,"message":"someError","step":5,"additionalCode":[]}', $functionResponse);
+        $this->assertEquals(['success' => false, 'message' => 'someError', 'step' => 5, 'additionalCode' => []], $functionResponse);
     }
 
     /*
      * Not much to test here
      */
-    public function testGetLibraryInfo() {
+    public function testGetLibraryInfoNormal() {
         $this->setUpController($controller, $container, $request, $apiHandler);
 
         // Override previous controller mock. More class member functions need to get mocked.
@@ -276,19 +276,53 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
          */
         $function = $this->getMethod('getLibraryInfo');
 
-        $controller->expects($this->once())->method('get')->with('codebender_builder.handler')
+        $controller->expects($this->any())->method('get')->with('codebender_builder.handler')
             ->willReturn($apiHandler);
 
-        $container->expects($this->once())->method('getParameter')->with('library_manager')
+        $container->expects($this->any())->method('getParameter')->with('library_manager')
             ->will($this->returnValue('http://library/manager'));
 
+        // test normal library manager output
         $apiHandler->expects($this->once())->method('postRawData')
             ->with('http://library/manager', 'library data')
-            ->willReturn('Whatever');
+            ->willReturn('{"success":true}');
 
         $functionResponse = $function->invoke($controller, 'library data');
 
-        $this->assertEquals('Whatever', $functionResponse);
+        $this->assertEquals(['success' => true], $functionResponse);
+    }
+
+    public function testGetLibraryInfoInvalid()
+    {
+        $this->setUpController($controller, $container, $request, $apiHandler);
+
+        // Override previous controller mock. More class member functions need to get mocked.
+        $controller = $this->getMockBuilder('Codebender\BuilderBundle\Controller\DefaultController')
+            ->disableOriginalConstructor()
+            ->setMethods(['get', 'getRequest'])
+            ->getMock();
+
+        $controller->setContainer($container);
+
+        /*
+         * Use ReflectionMethod class to make compile protected function accessible from current context
+         */
+        $function = $this->getMethod('getLibraryInfo');
+
+        $controller->expects($this->any())->method('get')->with('codebender_builder.handler')
+            ->willReturn($apiHandler);
+
+        $container->expects($this->any())->method('getParameter')->with('library_manager')
+            ->will($this->returnValue('http://library/manager'));
+
+        // test invalid library manager output
+        $apiHandler->expects($this->once())->method('postRawData')
+            ->with('http://library/manager', 'library data')
+            ->willReturn('{not json : true');
+
+        $functionResponse = $function->invoke($controller, 'library data');
+
+        $this->assertEquals(['success' => false, 'message' => 'Cannot fetch library data'], $functionResponse);
     }
 
     public function testReturnProvidedAndFetchedLibrariesNoProvidedLibrariesNoProjectLibraries() {
@@ -353,7 +387,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->willReturn(json_encode(['success' => true, 'files' => [['filename' => 'header.h', 'content' => '']]]));
+            ->willReturn(['success' => true, 'files' => [['filename' => 'header.h', 'content' => '']]]);
 
         $functionResponse = $function->invokeArgs($controller, [[], []]);
         $this->assertEquals(['header' => [['filename' => 'header.h', 'content' => '']]], $functionResponse['libraries']);
@@ -385,7 +419,7 @@ class DefaultControllerUnitTest extends \PHPUnit_Framework_TestCase
 
         $controller->expects($this->once())->method('getLibraryInfo')
             ->with('{"type":"fetch","library":"header"}')
-            ->willReturn(json_encode(['success' => false]));
+            ->willReturn(['success' => false]);
 
         $functionResponse = $function->invokeArgs($controller, [[], []]);
         $this->assertEquals([], $functionResponse['libraries']);
