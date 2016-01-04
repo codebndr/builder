@@ -49,12 +49,9 @@ class DefaultController extends Controller
 
         $contents = json_decode($request, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return new JsonResponse(['success' => false, 'message' => 'Wrong data.']);
-        }
-
-        if (!array_key_exists('data', $contents)) {
-            return new JsonResponse(['success' => false, 'message' => 'Insufficient data provided.']);
+        $isContentValid = $this->isContentValid($contents);
+        if ($isContentValid['success'] !== true) {
+            return new JsonResponse(['success' => false, 'message' => $isContentValid['error']]);
         }
 
         if ($contents['type'] == 'compiler') {
@@ -73,6 +70,19 @@ class DefaultController extends Controller
             'success' => false,
             'message' => 'Invalid request type (can handle only \'compiler\' or \'library\' requests)'
         ]);
+    }
+
+    protected function isContentValid($requestContent)
+    {
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return ['success' => false, 'error' => 'Wrong data.'];
+        }
+
+        if (!array_key_exists('data', $requestContent)) {
+            return ['success' => false, 'error' => 'Insufficient data provided.'];
+        }
+
+        return ['success' => true];
     }
 
     /**
