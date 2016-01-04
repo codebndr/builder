@@ -4,7 +4,6 @@ namespace Codebender\BuilderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * default controller of api bundle
@@ -64,6 +63,10 @@ class DefaultController extends Controller
 
         if ($contents['type'] == 'library') {
             return new JsonResponse($this->getLibraryInfo(json_encode($contents['data'])));
+        }
+
+        if ($contents['type'] == 'header-check') {
+            return new JsonResponse($this->headerCheck($contents['data']['code'], $contents['data']['header']));
         }
 
         return new JsonResponse([
@@ -203,6 +206,33 @@ class DefaultController extends Controller
             'foundHeaders' => $foundHeaders,
             'notFoundHeaders' => $notFoundHeaders
         ];
+    }
+
+    /**
+     * Detects whether a project uses a specified header. If the header exists
+     * in the project files and is detected in an include statement, it is not considered
+     * as being used by the project.
+     *
+     * @param array $projectCode
+     * @param string $header
+     * @return array
+     */
+    protected function headerCheck($projectCode, $header)
+    {
+        if ((string)$header == '') {
+            return ['success' => false, 'error' => 'Invalid header: ' . $header];
+        }
+        $header = str_replace('.h', '', $header);
+
+        $apiHandler = $this->get('codebender_builder.handler');
+
+        $detectedHeaders = $apiHandler->readLibraries($projectCode);
+
+        if (in_array($header, array_values($detectedHeaders))) {
+            return ['success' => true, 'headerIsUsed' => true];
+        }
+
+        return ['success' =>  true, 'headerIsUsed' => false];
     }
 
     /**
