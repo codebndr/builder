@@ -196,7 +196,11 @@ class DefaultController extends Controller
         $providedPayload = json_decode($this->getRequest()->getContent(), true);
 
         $payload = $this->generateCompilerPayload($providedPayload);
+        if (empty($payload)) {
+            return new JsonResponse(['success' => false, 'message' => 'Invalid compilation payload provided.']);
+        }
 
+        $payload['success'] = true;
         $payload['additionalCode'] = $this->additionalCode;
         $this->additionalCode = [];
 
