@@ -21,7 +21,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
         $this->assertEquals($client->getResponse()->getContent(), '{"success":true,"status":"OK"}');
     }
 
-    public function testHandleRequestGet() {
+    public function testHandleRequestErrors() {
         $client = static::createClient();
 
         $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
@@ -29,6 +29,19 @@ class DefaultControllerFunctionalTest extends WebTestCase
         $client->request('GET', "/{$authorizationKey}/{$apiVersion}/");
 
         $this->assertEquals($client->getResponse()->getStatusCode(), 405);
+
+        // insufficient data
+        $content = json_encode(['type' => 'compiler']);
+        $response = $this->performPostRequest($content);
+        $this->assertFalse($response['success']);
+        $this->assertEquals('Insufficient data provided.', $response['message']);
+
+        // invalid action requested
+        $content = json_encode(['type' => 'helloooo', 'data' => []]);
+        $response = $this->performPostRequest($content);
+        $this->assertFalse($response['success']);
+        $this->assertEquals('Invalid request type (can handle only \'compiler\' or \'library\' requests)',
+            $response['message']);
     }
 
     public function testHandleRequestCompile() {
@@ -97,58 +110,23 @@ class DefaultControllerFunctionalTest extends WebTestCase
         $this->assertTrue(is_array($response['keywords']));
     }
 
-    /**
-     * DefaultController::headerCheck test
-     * Test cases:
-     * - empty header provided
-     * - header not used in project
-     * - header used in project (header provided with extension)
-     * - header used in project (header provided without extension)
-     * - header used in project & is a project file
-     */
-    public function testHeaderCheck()
+    public function testGeneratePayloadAction()
     {
-        $projectFiles = [['filename' => 'project.ino', 'content' => "void setup()\n{\n}\nvoid loop()\n{\n}\n"]];
-        $content = json_encode(['type' => 'header-check', 'data' => ['code' => $projectFiles, 'header' => null]]);
-
-        $responseContent = $this->performPostRequest($content);
-        $this->assertFalse($responseContent['success']);
-
-        $projectFiles = [
-            ['filename' => 'project.ino', 'content' => "#include <Ethernet.h>\nvoid setup()\n{\n}\nvoid loop()\n{\n}\n"]
-        ];
-        $content = json_encode(['type' => 'header-check', 'data' => ['code' => $projectFiles, 'header' => 'SD.h']]);
-
-        $responseContent = $this->performPostRequest($content);
-        $this->assertTrue($responseContent['success']);
-        $this->assertFalse($responseContent['headerIsUsed']);
-
-        $projectFiles = [
-            ['filename' => 'project.ino', 'content' => "#include <Ethernet.h>\nvoid setup()\n{\n}\nvoid loop()\n{\n}\n"]
-        ];
-        $content = json_encode(['type' => 'header-check', 'data' => ['code' => $projectFiles, 'header' => 'Ethernet.h']]);
-
-        $responseContent = $this->performPostRequest($content);
-        $this->assertTrue($responseContent['success']);
-        $this->assertTrue($responseContent['headerIsUsed']);
-
-        $projectFiles = [
-            ['filename' => 'project.ino', 'content' => "#include \"file.h\"\nvoid setup()\n{\n}\nvoid loop()\n{\n}\n"],
-            ['filename' => 'file.h', 'content' => "#define CONST 5"]
-        ];
-        $content = json_encode(['type' => 'header-check', 'data' => ['code' => $projectFiles, 'header' => 'file']]);
-
-        $responseContent = $this->performPostRequest($content);
-        $this->assertTrue($responseContent['success']);
-        $this->assertFalse($responseContent['headerIsUsed']);
+        $providedContent = '{"files":[{"filename":"project.ino","content":"void setup(){\n\n}\nvoid loop(){\n\n}\n"}],"format":"binary","version":"105","build":{"mcu":"atmega328p","f_cpu":"16000000L","core":"arduino","variant":"standard"}}';
+        $response = $this->performPostRequest($providedContent, 'payload');
+        $this->assertEquals(
+            ['userId', 'projectId', 'files', 'format', 'version', 'build', 'libraries', 'additionalCode'],
+            array_keys($response)
+        );
     }
 
     /**
      * Performs a POST
      * @param string $requestContent JSON-encoded POST request content
+     * @param string $uri
      * @return array
      */
-    protected function performPostRequest($requestContent)
+    protected function performPostRequest($requestContent, $uri = '')
     {
         $client = static::createClient();
         $authorizationKey = $client->getContainer()->getParameter('authorizationKey');
@@ -156,7 +134,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
         $client
             ->request(
                 'POST',
-                "/{$authorizationKey}/{$apiVersion}/",
+                "/{$authorizationKey}/{$apiVersion}/" . $uri,
                 $parameters = [],
                 $files = [],
                 $server = [],
