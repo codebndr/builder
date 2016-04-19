@@ -115,7 +115,7 @@ class DefaultControllerFunctionalTest extends WebTestCase
         $providedContent = '{"files":[{"filename":"project.ino","content":"void setup(){\n\n}\nvoid loop(){\n\n}\n"}],"format":"binary","version":"105","build":{"mcu":"atmega328p","f_cpu":"16000000L","core":"arduino","variant":"standard"}}';
         $response = $this->performPostRequest($providedContent, 'payload');
         $this->assertEquals(
-            ['userId', 'projectId', 'files', 'format', 'version', 'build', 'libraries', 'additionalCode'],
+            ['userId', 'projectId', 'files', 'format', 'version', 'build', 'libraries', 'success', 'additionalCode'],
             array_keys($response)
         );
     }
