@@ -4,13 +4,15 @@ namespace Codebender\BuilderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * default controller of api bundle
  */
 class DefaultController extends Controller
 {
+    /* @var array $additionalCode */
+    protected $additionalCode = [];
+
     /**
      * status action
      *
@@ -26,36 +28,15 @@ class DefaultController extends Controller
      * Gets a request for compilation or library fetching (depends on the 'type' field of the request)
      * and passes the request to either the compiler or the library manager.
      *
-     * Includes several checks in order to ensure the validity of the data provided as well
-     * as authentication.
-     *
-     * @param $authKey
-     * @param $version
      * @return JsonResponse
      */
-    public function handleRequestAction($authKey, $version)
+    public function handleRequestAction()
     {
-        if ($authKey !== $this->container->getParameter('authorizationKey')) {
-            return new JsonResponse(['success' => false, 'message' => 'Invalid authorization key.']);
-        }
+        $contents = json_decode($this->getRequest()->getContent(), true);
 
-        if ($version !== $this->container->getParameter('version')) {
-            return new JsonResponse(['success' => false, 'message' => 'Invalid api version.']);
-        }
-
-        $request = $this->getRequest()->getContent();
-        if (empty($request)) {
-            return new JsonResponse(['success' => false, 'message' => 'Invalid input.']);
-        }
-
-        $contents = json_decode($request, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return new JsonResponse(['success' => false, 'message' => 'Wrong data.']);
-        }
-
-        if (!array_key_exists('data', $contents)) {
-            return new JsonResponse(['success' => false, 'message' => 'Insufficient data provided.']);
+        $isContentValid = $this->isContentValid($contents);
+        if ($isContentValid['success'] !== true) {
+            return new JsonResponse(['success' => false, 'message' => $isContentValid['error']]);
         }
 
         if ($contents['type'] == 'compiler') {
@@ -72,6 +53,15 @@ class DefaultController extends Controller
         ]);
     }
 
+    protected function isContentValid($requestContent)
+    {
+        if (!array_key_exists('data', $requestContent)) {
+            return ['success' => false, 'error' => 'Insufficient data provided.'];
+        }
+
+        return ['success' => true];
+    }
+
     /**
      * Gets the data from the handleRequestAction and proceeds with the compilation
      *
@@ -84,23 +74,11 @@ class DefaultController extends Controller
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
-        $contents = $this->addUserIdProjectIdIfNotInRequest($contents);
-
-        $files = $contents['files'];
-
-        $userLibraries = [];
-
-        if (array_key_exists('libraries', $contents)) {
-            $userLibraries = $contents['libraries'];
-        }
-
-        $userAndLibmanLibraries = $this->returnProvidedAndFetchedLibraries($files, $userLibraries);
-
-        $contents['libraries'] = $userAndLibmanLibraries['libraries'];
+        $contents = $this->generateCompilerPayload($contents);
 
         $compilerRequestContent = json_encode($contents);
 
-        // perform the actual post to the compiler
+        // perform the actual request to the compiler
         $data = $apiHandler->postRawData($this->container->getParameter('compiler'), $compilerRequestContent);
 
         $decodedResponse = json_decode($data, true);
@@ -112,8 +90,8 @@ class DefaultController extends Controller
             $decodedResponse['step'] = 'unknown';
         }
 
-        unset($userAndLibmanLibraries['libraries']);
-        $decodedResponse['additionalCode'] = $userAndLibmanLibraries;
+        $decodedResponse['additionalCode'] = $this->additionalCode;
+        $this->additionalCode = [];
 
         return $decodedResponse;
     }
@@ -195,14 +173,66 @@ class DefaultController extends Controller
             $libraries[$header] = $filesToBeAdded;
         }
 
-        return [
-            'libraries' => $libraries,
+        // store info about libraries and headers in the `additionalCode` class property;
+        $this->additionalCode = [
             'providedLibraries' => $providedLibraries,
             'fetchedLibraries' => $librariesFromLibman,
             'detectedHeaders'=> $detectedHeaders,
             'foundHeaders' => $foundHeaders,
             'notFoundHeaders' => $notFoundHeaders
         ];
+
+        return $libraries;
+    }
+
+    /**
+     * Returns the payload used for compilation. Parses projects files and libraries
+     * already existing in request and fetches any necessary libraries from eratosthenes.
+     *
+     * @return JsonResponse
+     */
+    public function generatePayloadAction()
+    {
+        $providedPayload = json_decode($this->getRequest()->getContent(), true);
+
+        $payload = $this->generateCompilerPayload($providedPayload);
+        if (empty($payload)) {
+            return new JsonResponse(['success' => false, 'message' => 'Invalid compilation payload provided.']);
+        }
+
+        $payload['success'] = true;
+        $payload['additionalCode'] = $this->additionalCode;
+        $this->additionalCode = [];
+
+        return new JsonResponse($payload);
+    }
+
+    /**
+     * Returns the payload of a compilation request. Sketch files and board-related
+     * data (build, core, variant) must be provided in the initial payload.
+     *
+     * @param array $providedData
+     * @return array
+     */
+    protected function generateCompilerPayload(array $providedData)
+    {
+        $payload = $this->addUserIdProjectIdIfNotInRequest($providedData);
+
+        if (!array_key_exists('files', $payload)) {
+            return [];
+        }
+
+        $files = $payload['files'];
+
+        $userLibraries = [];
+
+        if (array_key_exists('libraries', $payload)) {
+            $userLibraries = $payload['libraries'];
+        }
+
+        $payload['libraries'] = $this->returnProvidedAndFetchedLibraries($files, $userLibraries);
+
+        return $payload;
     }
 
     /**

@@ -3,8 +3,6 @@ imports:
     - { resource: security.yml }
 
 framework:
-    #esi:             ~
-    #translator:      { fallback: "%locale%" }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -14,12 +12,23 @@ framework:
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
-        #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_proxies: ~
     session:         ~
     fragments:       ~
     http_method_override: true
+
+# Services configuration
+services:
+    kernel.listener.auth_listener:
+        class: Codebender\BuilderBundle\EventListener\AuthListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 1 }
+        arguments: [ "%authorizationKey%", "%version%" ]
+    kernel.listener.data_validation_listener:
+        class: Codebender\BuilderBundle\EventListener\DataValidationListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }
 
 # Twig Configuration
 twig:

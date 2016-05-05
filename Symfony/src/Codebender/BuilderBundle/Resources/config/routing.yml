@@ -7,3 +7,9 @@ CodebenderBuilderBundle_handle_request:
     defaults: { _controller: CodebenderBuilderBundle:Default:handleRequest }
     requirements:
       _method: POST
+
+CodebenderBuilderBundle_ganerate_compiler_payload:
+    pattern:    /{authKey}/{version}/payload
+    defaults: { _controller: CodebenderBuilderBundle:Default:generatePayload }
+    requirements:
+      _method: POST
