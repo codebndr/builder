@@ -1,6 +1,5 @@
-language: php
-php:
-  - 5.5.9
+sudo: required
+dist: trusty
 
 env:
   global:
@@ -14,7 +13,7 @@ before_script:
   - scripts/travis_install.sh
   - cd /opt/codebender/builder/Symfony
   - sudo chmod -R 777 app/cache app/logs
-  - echo 'error_reporting =  E_ALL' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'error_reporting =  E_ALL' >> /etc/php5/cli/conf.d/travis.ini
   - cd /opt/codebender/builder
   - sudo chmod +x scripts/travis_apache_install.sh
   - scripts/travis_apache_install.sh
