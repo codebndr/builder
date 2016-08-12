@@ -48,19 +48,20 @@ class DefaultHandler
          * Examples:
          * #include<stdio.h>
          * # include "proto.h"
-         *
+         * #include "jsonlib.hpp"
          */
-        $arrowsRegex = "/^\s*#\s*include\s*<\s*([a-zA-Z0-9_+]*)\.h\s*>/";
-        $quotesRegex = "/^\s*#\s*include\s*\"\s*([a-zA-Z0-9_+]*)\.h\s*\"/";
+        $arrowsRegex = "/^\s*#\s*include\s*<\s*([a-zA-Z0-9_+]*\.h)\s*([p]{2})*\s*>/";
+        $quotesRegex = "/^\s*#\s*include\s*\"\s*([a-zA-Z0-9_+]*\.h)\s*([p]{2})*\s*\"/";
 
         $headers = ["arrows" => [], "quotes" => []];
+        $matches= [[]];
         foreach (explode("\n", $code) as $line)
         {
-          if (preg_match($arrowsRegex, $line, $matches))
-              $headers["arrows"][] = $matches[1];
-          if (preg_match($quotesRegex, $line, $matches))
-              $headers["quotes"][] = $matches[1];
-        }
+          if (preg_match($arrowsRegex, $line, $matches)){
+              $headers["arrows"][] = $matches[1].$matches[2];}
+          if (preg_match($quotesRegex, $line, $matches)){
+              $headers["quotes"][] = $matches[1].$matches[2];
+        }}
 
         $headers["arrows"] = array_unique($headers["arrows"]);
         $headers["quotes"] = array_unique($headers["quotes"]);
@@ -88,7 +89,7 @@ class DefaultHandler
 
                 foreach ($headers["quotes"] as $key => $header) {
                     foreach ($sketchFiles as $file) {
-                        if ($file["filename"] == $header.".h")
+                        if ($file["filename"] == $header)
                             unset($headers["quotes"][$key]);
                     }
                 }
