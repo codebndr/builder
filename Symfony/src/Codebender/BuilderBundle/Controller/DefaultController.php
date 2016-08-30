@@ -130,7 +130,7 @@ class DefaultController extends Controller
     {
         $apiHandler = $this->get('codebender_builder.handler');
 
-        $detectedHeaders = $apiHandler->readLibraries($projectFiles);
+        $detectedHeaderstemp = $apiHandler->readLibraries($projectFiles);
 
         // declare arrays
         $notFoundHeaders = [];
@@ -139,15 +139,15 @@ class DefaultController extends Controller
         $providedLibraries = array_keys($userLibraries);
         $libraries = $userLibraries;
 
-        foreach ($detectedHeaders as $header) {
+        foreach ($detectedHeaderstemp as $header) {
 
             $existsInRequest = false;
             // TODO We can do this in a better way
             foreach ($userLibraries as $library) {
                 foreach ($library as $libraryContent) {
-                    if ($libraryContent["filename"] == $header.".h") {
+                    if ($libraryContent["filename"] == $header) {
                         $existsInRequest = true;
-                        $foundHeaders[] = $header . ".h";
+                        $foundHeaders[] = $header;
                     }
                 }
             }
@@ -155,23 +155,37 @@ class DefaultController extends Controller
             if ($existsInRequest === true) {
                 continue;
             }
-            $requestContent = ["type" => "fetch", "library" => $header];
+
+            //Fetch lib from library manager by name
+		$headername = pathinfo($header, PATHINFO_FILENAME);
+
+            $requestContent = ["type" => "fetch", "library" => $headername];
             $data = $this->getLibraryInfo(json_encode($requestContent));
 
             if ($data['success'] === false) {
-                $notFoundHeaders[] = $header . ".h";
+                $notFoundHeaders[] = $header;
                 continue;
             }
 
-            $foundHeaders[] = $header . ".h";
+            $foundHeaders[] = $header;
             $librariesFromLibman[] = $header;
             $filesToBeAdded = [];
             foreach ($data["files"] as $file) {
-                if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'c', 'S', 'inc')))
+                if (in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), array('cpp', 'h', 'hpp', 'c', 'S', 'inc')))
                     $filesToBeAdded[] = $file;
             }
             $libraries[$header] = $filesToBeAdded;
         }
+
+        /*
+         * Get only the names of the header files.
+         * Until we make codebender handles headers along with their extensions (e.g. "Ethernet.h", not "Ethernet"),
+         * this must stay here for compatibility reasons.
+         */
+	 foreach ($detectedHeaderstemp as $headerfiles) {
+	     $detectedHeaders[] = pathinfo($headerfiles, PATHINFO_FILENAME);
+            }
+
 
         // store info about libraries and headers in the `additionalCode` class property;
         $this->additionalCode = [
